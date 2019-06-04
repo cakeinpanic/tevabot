@@ -12,19 +12,13 @@ const utils = require('./utils');
 
 const actions = [];
 const yesno = {
-    parse_mode: "Markdown",
+    parse_mode: 'Markdown',
     remove_keyboard: true,
     reply_markup: {
-        inline_keyboard: [
-            [
-                {text: "Верно", callback_data: "true"}
-            ], [
-                {text: "Я передумал", callback_data: "false"}
-            ]
-        ],
+        inline_keyboard: [[{text: 'Верно', callback_data: 'true'}], [{text: 'Я передумал', callback_data: 'false'}]],
         resize_keyboard: true,
-        one_time_keyboard: false,
-    },
+        one_time_keyboard: false
+    }
 };
 
 bot.onText(/\/setgroup\s*(.+)/, (msg, match) => {
@@ -35,20 +29,21 @@ bot.onText(/\/setgroup\s*(.+)/, (msg, match) => {
     base.addUserGroup(msg.from.id, groupNumber);
 });
 
-bot.on("callback_query", t => {
+bot.on('callback_query', t => {
     const action = _.find(actions, {id: t.message.message_id});
 
-    if(action) {
+    if (action) {
         action.cb();
     }
     bot.editMessageReplyMarkup(
         {
-            parse_mode: "Markdown",
+            parse_mode: 'Markdown'
         },
         {
             chat_id: t.message.chat.id,
             message_id: t.message.message_id
-        });
+        }
+    );
 });
 
 bot.onText(/^[sS]end\s+(.+)/, (msg, match) => {
@@ -59,7 +54,13 @@ bot.onText(/^[sS]end\s+(.+)/, (msg, match) => {
         return;
     }
 
-    bot.sendMessage(chatId, `sending to all participants from group ${match[1]} text:\n "${reply.text}"\n*reply anything to this message to really send it*!`, yesno).then(t => {
+    bot.sendMessage(
+        chatId,
+        `sending to all participants from group ${match[1]} text:\n "${
+            reply.text
+        }"\n*reply anything to this message to really send it*!`,
+        yesno
+    ).then(t => {
         actions.push({
             id: t.message_id,
             cb: () => {
@@ -73,7 +74,7 @@ bot.onText(/^[sS]end\s+(.+)/, (msg, match) => {
     });
 });
 
-bot.on('message', (msg) => {
+bot.on('message', msg => {
     // console.log(msg);
     // if (utils.isFromAdmin(msg)) {
     //     processMessageFromAdmin(msg);
@@ -88,18 +89,16 @@ bot.on('message', (msg) => {
     // processMessageInChat(msg);
 });
 
-function processMessageFromAdmin(msg) {
-
-}
+function processMessageFromAdmin(msg) {}
 
 function processMessageFromUser(msg) {
     const chatId = msg.chat.id;
-    base.addUser(msg.from)
+    base.addUser(msg.from);
     // bot.sendMessage(chatId, 'Received your message');
 }
 
 function processMessageInChat(msg) {
-    forwardMessageToAdminChat(msg.from.id, msg.message_id)
+    forwardMessageToAdminChat(msg.from.id, msg.message_id);
 }
 
 function sendMessageToAdminChat(message) {
@@ -107,17 +106,17 @@ function sendMessageToAdminChat(message) {
 }
 
 function forwardMessageToAdminChat(fromChatId, messageId) {
-    bot.forwardMessage(CHAT_ID, fromChatId, messageId)
+    bot.forwardMessage(CHAT_ID, fromChatId, messageId);
 }
 
 function sendToAllUsersInTheGroup(msg, group) {
-    bot.sendMessage(utils.MOTHER, 'writing to group '+ group)
+    bot.sendMessage(utils.MOTHER, 'writing to group ' + group);
     base.groups[group].forEach(user => {
         bot.sendMessage(user, msg);
-    })
+    });
 }
 
 function sendToAllUsers(msg) {
-    bot.sendMessage(utils.MOTHER, 'writing to all')
+    bot.sendMessage(utils.MOTHER, 'writing to all');
     base.groups.forEach((g, i) => sendToAllUsersInTheGroup(msg, i));
 }

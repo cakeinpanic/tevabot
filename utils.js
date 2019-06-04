@@ -10,5 +10,4 @@ function isFromUser(msg) {
     return chatId > 0;
 }
 
-
 module.exports = {MOTHER, isFromAdmin, isFromUser};
