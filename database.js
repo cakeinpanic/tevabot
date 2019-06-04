@@ -18,11 +18,12 @@ function Database() {
     this.addUserGroup = (userId, groupNumber) =>{
         // console.log(userId, groupNumber);
         if(!groupNumber) {
-            this.groups.forEach(g=>{
-                _.remove(g, userId);
+            _.forEach(this.groups,(value, key) =>{
+                _.pull(value, userId);
             })
             return;
         }
+        this.addUserGroup.call(this, userId)
         this.groups[groupNumber].push(userId);
         console.log(this.groups);
     }
