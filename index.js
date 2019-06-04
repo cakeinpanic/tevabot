@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 // replace the value below with the Telegram token you receive from @BotFather
 const token = '123456';
 
-// Create a bot that uses 'polling' to fetch new updates
+const _ = require('lodash');
 const bot = new TelegramBot(token, {polling: true});
 
 const base = require('./database');
@@ -10,31 +10,37 @@ const base = require('./database');
 const CHAT_ID = 123456;
 const utils = require('./utils');
 
+const actions = [];
 const yesno = {
     parse_mode: "Markdown",
     remove_keyboard: true,
     reply_markup: {
-        inline_keyboard: [[{text: "Верно", callback_data: "true", switch_inline_query: "/sss"}], [{
-            text: "Я передумал",
-            callback_data: "false"
-        }]],
+        inline_keyboard: [
+            [
+                {text: "Верно", callback_data: "true"}
+            ], [
+                {text: "Я передумал", callback_data: "false"}
+            ]
+        ],
         resize_keyboard: true,
         one_time_keyboard: false,
     },
 };
 
-// Matches "/echo [whatever]"
 bot.onText(/\/setgroup\s*(.+)/, (msg, match) => {
     if (!utils.isFromAdmin(msg)) {
         return;
     }
-    // bot.sendChatAction(msg.chat.id,)
-    const groupNumber = match[1]; // the captured "whatever"
+    const groupNumber = match[1];
     base.addUserGroup(msg.from.id, groupNumber);
 });
 
 bot.on("callback_query", t => {
-    console.log(t);
+    const action = _.find(actions, {id: t.message.message_id});
+
+    if(action) {
+        action.cb();
+    }
     bot.editMessageReplyMarkup(
         {
             parse_mode: "Markdown",
@@ -44,7 +50,7 @@ bot.on("callback_query", t => {
             message_id: t.message.message_id
         });
 });
-// Matches "/echo [whatever]"
+
 bot.onText(/^[sS]end\s+(.+)/, (msg, match) => {
     const reply = msg.reply_to_message;
     const chatId = msg.chat.id;
@@ -54,17 +60,16 @@ bot.onText(/^[sS]end\s+(.+)/, (msg, match) => {
     }
 
     bot.sendMessage(chatId, `sending to all participants from group ${match[1]} text:\n "${reply.text}"\n*reply anything to this message to really send it*!`, yesno).then(t => {
-        console.log(t);
-        const id = bot.onReplyToMessage(chatId, t.message_id, () => {
-            bot.removeReplyListener(id);
-            if (match[1] === 'all') {
-                sendToAllUsers(reply.text);
-                return;
+        actions.push({
+            id: t.message_id,
+            cb: () => {
+                if (match[1] === 'all') {
+                    sendToAllUsers(reply.text);
+                    return;
+                }
+                sendToAllUsersInTheGroup(reply.text, match[1]);
             }
-            sendToAllUsersInTheGroup(reply.text, match[1]);
-
         });
-
     });
 });
 
@@ -106,11 +111,13 @@ function forwardMessageToAdminChat(fromChatId, messageId) {
 }
 
 function sendToAllUsersInTheGroup(msg, group) {
+    bot.sendMessage(utils.MOTHER, 'writing to group '+ group)
     base.groups[group].forEach(user => {
         bot.sendMessage(user, msg);
     })
 }
 
 function sendToAllUsers(msg) {
+    bot.sendMessage(utils.MOTHER, 'writing to all')
     base.groups.forEach((g, i) => sendToAllUsersInTheGroup(msg, i));
 }

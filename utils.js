@@ -1,7 +1,8 @@
+const MOTHER = 123456;
 
 function isFromAdmin(msg) {
     const chatId = msg.from.id;
-    return chatId === 123456;
+    return chatId === MOTHER;
 }
 
 function isFromUser(msg) {
@@ -10,4 +11,4 @@ function isFromUser(msg) {
 }
 
 
-module.exports = {isFromAdmin, isFromUser}
+module.exports = {MOTHER, isFromAdmin, isFromUser};
