@@ -1,30 +1,37 @@
-const _ = require('lodash');
+import * as _ from 'lodash';
 
-function Database() {
-    this.users = [];
-
-    this.groups = {
+class Database {
+    public users = [];
+    public groups = {
         1: [],
         2: [],
         3: []
     };
 
-    this.addUser = user => {
+    constructor() {
+    }
+
+    addUser(user) {
         this.users.push(user);
         this.users = _.uniqBy(this.users, 'id');
+
     };
 
-    this.addUserGroup = (userId, groupNumber) => {
+    addUserGroup(userId, groupNumber = null) {
+
         if (!groupNumber) {
             _.forEach(this.groups, value => {
                 _.pull(value, userId);
             });
             return;
         }
-        this.addUserGroup.call(this, userId);
+        if(!this.groups[groupNumber]){
+            return;
+        }
+        this.addUserGroup(userId);
         this.groups[groupNumber].push(userId);
         console.log(this.groups);
     };
 }
 
-module.exports = new Database();
+export const base = new Database();

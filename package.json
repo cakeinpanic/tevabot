@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prettier": "prettier --write '**/*.js'"
+    "prettier": "prettier --write '**/*.ts'",
+    "tsc": "tsc",
+    "start": "ts-node index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +15,9 @@
     "firebase-admin": "^8.0.0",
     "lodash": "^4.17.11",
     "node-telegram-bot-api": "^0.30.0",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.2",
+    "ts-node-dev": "^1.0.0-pre.39",
+    "typescript": "^3.5.1"
   },
   "devDependencies": {
     "husky": "^2.3.0",
