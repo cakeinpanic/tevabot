@@ -1,14 +1,11 @@
-const CHAT_ID = 123456;
+
 import './actions.ts';
-import {$messages, bot} from './bot';
+import {$channelMessages, $messages, bot, MOTHER_CHAT} from './bot';
 import {base} from './database';
 
 import './groups.ts';
 
 
-bot.on('message', msg => {
-    $messages.next(msg);
-});
 
 
 function processMessageFromUser(msg) {
@@ -22,9 +19,9 @@ function processMessageInChat(msg) {
 }
 
 function sendMessageToAdminChat(message) {
-    bot.sendMessage(CHAT_ID, message);
+    bot.sendMessage(MOTHER_CHAT, message);
 }
 
 function forwardMessageToAdminChat(fromChatId, messageId) {
-    bot.forwardMessage(CHAT_ID, fromChatId, messageId);
+    bot.forwardMessage(MOTHER_CHAT, fromChatId, messageId);
 }

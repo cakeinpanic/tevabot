@@ -14,7 +14,6 @@ class Database {
         3: 'Кибуц(3)'
     }
 
-
     constructor() {
     }
 

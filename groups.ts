@@ -1,7 +1,7 @@
 import {filter, map} from 'rxjs/operators';
 import {$messages, actions, bot} from './bot';
 import {base} from './database';
-import {isFromAdmin, MOTHER} from './utils';
+import {isFromAdmin, isFromUser, isInAdminChat} from './utils';
 
 const YES_NO = {
     parse_mode: 'Markdown',
@@ -12,6 +12,7 @@ const YES_NO = {
         one_time_keyboard: false
     }
 };
+
 const CHOOSE_GROUP = {
     parse_mode: 'Markdown',
     remove_keyboard: true,
@@ -23,6 +24,8 @@ const CHOOSE_GROUP = {
 };
 
 export const $setGroup = $messages.pipe(
+    filter(({text}) => !!text),
+    filter((msg) => isFromUser(msg)),
     map((msg: any) => ({
             msg,
             match: msg.text.match(/\/setgroup/)
@@ -33,6 +36,8 @@ export const $setGroup = $messages.pipe(
 
 
 export const $sendToGroup = $messages.pipe(
+    filter(({text}) => !!text),
+    filter((msg) => isInAdminChat(msg)),
     map((msg: any) => ({
             msg,
             match: msg.text.match(/^[sS]end\s+(.+)/)
@@ -42,9 +47,7 @@ export const $sendToGroup = $messages.pipe(
 );
 
 
-$setGroup.subscribe(({msg}) => {
-    addToGroup(msg.from.id);
-});
+$setGroup.subscribe(({msg}) => addToGroup(msg.from.id));
 
 
 $sendToGroup.subscribe(({msg, match}) => sendMessageToGroup(msg, match));
@@ -71,7 +74,7 @@ function addToGroup(userId) {
 function sendMessageToGroup(msg, match) {
     const reply = msg.reply_to_message;
     const chatId = msg.chat.id;
-
+    console.log(msg);
     if (!reply || !isFromAdmin(msg)) {
         return;
     }
@@ -85,7 +88,10 @@ function sendMessageToGroup(msg, match) {
     ).then(t => {
         actions.push({
             id: t.message_id,
-            cb: () => {
+            cb: (reply) => {
+                if (reply === 'false') {
+                    return;
+                }
                 if (match[1] === 'all') {
                     sendToAllUsers(reply.text);
                     return;
@@ -98,13 +104,13 @@ function sendMessageToGroup(msg, match) {
 
 
 function sendToAllUsersInTheGroup(msg, group) {
-    bot.sendMessage(MOTHER, 'writing to group ' + group);
+    bot.sendMessage(msg.chat.id, 'writing to group ' + group);
+    console.log(msg);
     base.groups[group].forEach(user => {
         bot.sendMessage(user, msg);
     });
 }
 
 function sendToAllUsers(msg) {
-    bot.sendMessage(MOTHER, 'writing to all');
     Object.keys(base.groups).forEach((g) => sendToAllUsersInTheGroup(msg, g));
 }
