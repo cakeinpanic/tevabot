@@ -2,7 +2,8 @@ import {Subject} from 'rxjs/index';
 import {IAction} from './actions';
 
 const TelegramBot = require('node-telegram-bot-api');
-const token = '123456';
+const token = process.env.BOT_TOKEN;
+//'123456';
 
 export const bot = new TelegramBot(token, {polling: true});
 
