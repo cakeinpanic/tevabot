@@ -36,11 +36,11 @@ export const $setGroup = $messages.pipe(
 
 
 export const $sendToGroup = $messages.pipe(
-    filter(({text}) => !!text),
+    // filter(({text}) => !!text),
     filter((msg) => isInAdminChat(msg)),
     map((msg: any) => ({
             msg,
-            match: msg.text.match(/^[sS]end\s+(.+)/)
+            match: msg.text.match(/^[sS]end/)
         })
     ),
     filter(({match}) => !!match)
@@ -50,62 +50,86 @@ export const $sendToGroup = $messages.pipe(
 $setGroup.subscribe(({msg}) => addToGroup(msg.from.id));
 
 
-$sendToGroup.subscribe(({msg, match}) => sendMessageToGroup(msg, match));
+$sendToGroup.subscribe(({msg}) => sendMessageToGroup(msg));
 
 
 function addToGroup(userId) {
-    bot.sendMessage(
-        userId,
-        `Выберите группу`,
-        CHOOSE_GROUP
-    ).then(t => {
+    bot.sendMessage(userId, `Выберите группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,
             cb: (groupNumber) => {
                 base.addUserGroup(userId, groupNumber);
                 bot.sendMessage(userId, `Вы добавлены в группу ${base.groupsDescription[groupNumber]}`);
-            }
+            },
+            remove: true
         });
     });
 
 
 }
 
-function sendMessageToGroup(msg, match) {
+function sendMessageToGroup(msg) {
     const reply = msg.reply_to_message;
     const chatId = msg.chat.id;
-    console.log(msg);
+    const textToSend = reply.text;
+    const originalMessageId = reply.message_id;
     if (!reply || !isFromAdmin(msg)) {
         return;
     }
 
-    bot.sendMessage(
-        chatId,
-        `sending to all participants from group ${match[1]} text:\n "${
-            reply.text
-            }"\n*reply anything to this message to really send it*!`,
-        YES_NO
-    ).then(t => {
-        actions.push({
-            id: t.message_id,
-            cb: (reply) => {
-                if (reply === 'false') {
-                    return;
-                }
-                if (match[1] === 'all') {
-                    sendToAllUsers(reply.text);
-                    return;
-                }
-                sendToAllUsersInTheGroup(reply.text, match[1]);
-            }
+    bot.sendMessage(chatId, `выберите группу для отправки сообщения \n"${textToSend.substring(0, 40)}..."`, CHOOSE_GROUP)
+        .then(theMessage => {
+            actions.push({
+                id: theMessage.message_id,
+                cb: (groupId) => {
+                    confirmGroupChoose(chatId, textToSend, groupId,originalMessageId);
+                },
+                remove: true
+            })
         });
-    });
 }
 
 
+function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
+    bot.sendMessage(
+        chatId,
+        `отправляю сообщение \n"${textToSend.substring(0, 40)}..." в группу:\n "${base.groupsDescription[groupId]}"`,
+        YES_NO
+    ).then((theMessage => {
+        actions.push({
+            id: theMessage.message_id,
+            cb: (reply) => {
+                sendOrNot(reply === 'true', textToSend, groupId)
+                bot.sendMessage(
+                    chatId,
+                    `Отправлено в группу "${base.groupsDescription[groupId]}"`,
+                    {reply_to_message_id: originalMessageId}
+                )
+            },
+            remove: true
+        })
+    }))
+
+}
+
+function sendOrNot(reply: boolean, textToSend: string, groupId: string) {
+    if (!reply) {
+        return;
+    }
+
+    if (groupId === 'all') {
+        sendToAllUsers(textToSend);
+        return;
+    }
+
+    sendToAllUsersInTheGroup(textToSend, groupId);
+
+
+}
+
 function sendToAllUsersInTheGroup(msg, group) {
-    bot.sendMessage(msg.chat.id, 'writing to group ' + group);
-    console.log(msg);
+    console.log(msg, ' writing to group ' + group);
+
     base.groups[group].forEach(user => {
         bot.sendMessage(user, msg);
     });

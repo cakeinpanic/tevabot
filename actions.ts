@@ -32,11 +32,26 @@ export interface IActionReaction {
     data: string
 }
 
+export interface IAction {
+    remove: boolean;
+    cb: (any) => any;
+    id: number
+
+}
+
 bot.on('callback_query', (t: IActionReaction) => {
     const action = _.find(actions, {id: t.message.message_id});
 
     if (action) {
-        action.cb(t.data);
+        action.cb(t.data, {
+                chat_id: t.message.chat.id,
+                message_id: t.message.message_id
+            }
+        );
+    }
+    if (action.remove) {
+        bot.deleteMessage(t.message.chat.id, t.message.message_id);
+        return;
     }
     bot.editMessageReplyMarkup(
         {
