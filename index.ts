@@ -1,11 +1,8 @@
-
 import './actions.ts';
-import {$channelMessages, $messages, bot, MOTHER_CHAT} from './bot';
+import {bot, MOTHER_CHAT} from './bot';
 import {base} from './database';
 
-import './groups.ts';
-
-
+import './groups';
 
 
 function processMessageFromUser(msg) {

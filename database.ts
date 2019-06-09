@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 
+export const ALL = 'all';
+
 class Database {
     users = [];
     groups = {

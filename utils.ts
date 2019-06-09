@@ -16,3 +16,13 @@ export function isInAdminChat(msg) {
     const chatId = msg.chat.id;
     return chatId === MOTHER_CHAT;
 }
+
+
+export function getMessageContent(msg) {
+    if (msg.text) {
+        return msg.text
+    }
+    if (msg.sticker) {
+        return msg.sticker.emoji;
+    }
+}
