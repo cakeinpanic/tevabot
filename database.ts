@@ -1,14 +1,29 @@
 import * as _ from 'lodash';
 
 class Database {
-    public users = [];
-    public groups = {
+    users = [];
+    groups = {
         1: [],
         2: [],
         3: []
     };
 
+    groupsDescription = {
+        1: 'Друзы(1)',
+        2: 'Датишные(2)',
+        3: 'Кибуц(3)'
+    }
+
+
     constructor() {
+    }
+
+
+    get getGroupsButtons() {
+        return Object.keys(this.groupsDescription).map(key => ([{
+            text: this.groupsDescription[key],
+            callback_data: key
+        }]))
     }
 
     addUser(user) {
@@ -18,14 +33,13 @@ class Database {
     };
 
     addUserGroup(userId, groupNumber = null) {
-
         if (!groupNumber) {
             _.forEach(this.groups, value => {
                 _.pull(value, userId);
             });
             return;
         }
-        if(!this.groups[groupNumber]){
+        if (!this.groups[groupNumber]) {
             return;
         }
         this.addUserGroup(userId);

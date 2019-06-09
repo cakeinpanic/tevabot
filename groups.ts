@@ -12,11 +12,20 @@ const YES_NO = {
         one_time_keyboard: false
     }
 };
+const CHOOSE_GROUP = {
+    parse_mode: 'Markdown',
+    remove_keyboard: true,
+    reply_markup: {
+        inline_keyboard: base.getGroupsButtons,
+        resize_keyboard: true,
+        one_time_keyboard: false
+    }
+};
 
 export const $setGroup = $messages.pipe(
     map((msg: any) => ({
             msg,
-            match: msg.text.match(/\/setgroup\s*(.+)/)
+            match: msg.text.match(/\/setgroup/)
         })
     ),
     filter(({match}) => !!match)
@@ -33,17 +42,31 @@ export const $sendToGroup = $messages.pipe(
 );
 
 
-$setGroup.subscribe(({msg, match}) => {
-    if (!isFromAdmin(msg)) {
-        return;
-    }
-    const groupNumber = match[1];
-    base.addUserGroup(msg.from.id, groupNumber);
+$setGroup.subscribe(({msg}) => {
+    addToGroup(msg.from.id);
 });
 
 
 $sendToGroup.subscribe(({msg, match}) => sendMessageToGroup(msg, match));
 
+
+function addToGroup(userId) {
+    bot.sendMessage(
+        userId,
+        `Выберите группу`,
+        CHOOSE_GROUP
+    ).then(t => {
+        actions.push({
+            id: t.message_id,
+            cb: (groupNumber) => {
+                base.addUserGroup(userId, groupNumber);
+                bot.sendMessage(userId, `Вы добавлены в группу ${base.groupsDescription[groupNumber]}`);
+            }
+        });
+    });
+
+
+}
 
 function sendMessageToGroup(msg, match) {
     const reply = msg.reply_to_message;

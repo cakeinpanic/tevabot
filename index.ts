@@ -3,7 +3,7 @@ import './actions.ts';
 import {$messages, bot} from './bot';
 import {base} from './database';
 
-import './sendingMessagesToGroups.ts';
+import './groups.ts';
 
 
 bot.on('message', msg => {
