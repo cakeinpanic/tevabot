@@ -1,24 +1,21 @@
 import './actions.ts';
-import {bot, MOTHER_CHAT} from './bot';
-import {base} from './database';
 
 import './groups';
 
+const express = require('express');
 
-function processMessageFromUser(msg) {
-    const chatId = msg.chat.id;
-    base.addUser(msg.from);
-    // bot.sendMessage(chatId, 'Received your message');
-}
 
-function processMessageInChat(msg) {
-    forwardMessageToAdminChat(msg.from.id, msg.message_id);
-}
+var packageInfo = require('./package.json');
 
-function sendMessageToAdminChat(message) {
-    bot.sendMessage(MOTHER_CHAT, message);
-}
+var app = express();
 
-function forwardMessageToAdminChat(fromChatId, messageId) {
-    bot.forwardMessage(MOTHER_CHAT, fromChatId, messageId);
-}
+app.get('/', function (req, res) {
+    res.json({ version: packageInfo.version });
+});
+
+var server = app.listen(process.env.PORT, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+
+    console.log('Web server started at http://%s:%s', host, port);
+});
