@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {MOTHER_CHAT} from './bot';
 
 export const MOTHER = 123456;
@@ -25,4 +26,11 @@ export function getMessageContent(msg) {
     if (msg.sticker) {
         return msg.sticker.emoji;
     }
+}
+
+export function mapByMatch(...rgs) {
+    return (msg: any) => ({
+        msg,
+        match: _.find(rgs.map(rg => msg.text.match(rg)), (match => !!match))
+    })
 }

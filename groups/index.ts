@@ -1,30 +1,19 @@
 import {filter, map} from 'rxjs/operators';
-import {$messages} from '../bot';
-import {isFromUser, isInAdminChat} from '../utils';
+import {$textMessages} from '../bot';
+import {mapByMatch, isFromUser, isInAdminChat} from '../utils';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 
-export const $setGroup = $messages.pipe(
-    filter(({text}) => !!text),
+const $setGroup = $textMessages.pipe(
     filter((msg) => isFromUser(msg)),
-    map((msg: any) => ({
-            msg,
-            match: msg.text.match(/\/setgroup/) || msg.text.match(/\/start/)
-        })
-    ),
+    map(mapByMatch(/\/setgroup/,/\/start/ )),
     filter(({match}) => !!match)
 );
 
-export const $sendToGroup = $messages.pipe(
-    filter(({text}) => !!text),
+const $sendToGroup = $textMessages.pipe(
     filter((msg) => isInAdminChat(msg)),
-    map((msg: any) => ({
-            msg,
-            match: msg.text.match(/^[sS]end/)
-        })
-    ),
+    map(mapByMatch(/^[sS]end/)),
     filter(({match}) => !!match)
 );
-
 
 $setGroup.subscribe(({msg}) => addUSerToGroup(msg.from.id));
 
