@@ -2,6 +2,8 @@ import './actions.ts';
 
 import './groups';
 
+import './facts';
+
 const express = require('express');
 
 
