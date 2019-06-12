@@ -1,14 +1,11 @@
 import './actions.ts';
 
 import './groups';
-
 import './facts';
+import './firebase';
 
 const express = require('express');
-
-
 var packageInfo = require('./package.json');
-
 var app = express();
 
 app.get('/', function (req, res) {

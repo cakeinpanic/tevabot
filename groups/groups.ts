@@ -43,7 +43,6 @@ export function sendMessageToGroup(msg) {
         });
 }
 
-
 function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
     const groupName = groupId === ALL ? 'все' : base.groupsDescription[groupId];
     bot.sendMessage(

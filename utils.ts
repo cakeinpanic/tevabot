@@ -1,6 +1,12 @@
 import * as _ from 'lodash';
 import {MOTHER_CHAT} from './bot';
 
+export interface IMessage {
+    text: string;
+    from: any;
+    chat: any;
+}
+
 export const MOTHER = 123456;
 
 export function isFromAdmin(msg) {
@@ -29,7 +35,7 @@ export function getMessageContent(msg) {
 }
 
 export function mapByMatch(...rgs) {
-    return (msg: any) => ({
+    return (msg: IMessage) => ({
         msg,
         match: _.find(rgs.map(rg => msg.text.match(rg)), (match => !!match))
     })

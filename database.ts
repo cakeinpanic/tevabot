@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import {firebase} from './firebase';
 
 export const ALL = 'all';
 
@@ -17,6 +18,14 @@ class Database {
     }
 
     constructor() {
+        firebase.readUsers().then((u) => {
+            const needToUpdate = this.users.length;
+            this.users = this.users.concat(u);
+            if (needToUpdate) {
+                firebase.saveUsers(this.users);
+            }
+            console.log('got from db', this.users)
+        });
     }
 
 
@@ -28,9 +37,21 @@ class Database {
     }
 
     addUser(user) {
-        this.users.push(user);
-        this.users = _.uniqBy(this.users, 'id');
+        console.log('add user');
+        console.log(this.users.length);
+        const alreadyHas =  this.users.indexOf((u) => {
+            console.log(u.id, user.id);
+            return u.id === user.id
+        });
 
+        // console.log(user.id, alreadyHas);
+        // if (alreadyHas) {
+        //     return;
+        // }
+        //
+        // this.users.push(user);
+        // this.users = _.uniqBy(this.users, 'id');
+        // firebase.saveUsers(this.users);
     };
 
     addUserGroup(userId, groupNumber = null) {
@@ -40,9 +61,11 @@ class Database {
             });
             return;
         }
+
         if (!this.groups[groupNumber]) {
             return;
         }
+
         this.addUserGroup(userId);
         this.groups[groupNumber].push(userId);
         console.log(this.groups);
