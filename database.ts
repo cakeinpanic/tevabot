@@ -21,6 +21,7 @@ class Database {
         firebase.readUsers().then((u) => {
             const needToUpdate = this.users.length;
             this.users = this.users.concat(u);
+
             if (needToUpdate) {
                 firebase.saveUsers(this.users);
             }
@@ -37,21 +38,17 @@ class Database {
     }
 
     addUser(user) {
-        console.log('add user');
-        console.log(this.users.length);
-        const alreadyHas =  this.users.indexOf((u) => {
-            console.log(u.id, user.id);
+        const alreadyHas =  !!this.users.find((u) => {
             return u.id === user.id
         });
 
-        // console.log(user.id, alreadyHas);
-        // if (alreadyHas) {
-        //     return;
-        // }
-        //
-        // this.users.push(user);
-        // this.users = _.uniqBy(this.users, 'id');
-        // firebase.saveUsers(this.users);
+        if (alreadyHas) {
+            return;
+        }
+
+        this.users.push(user);
+        this.users = _.uniqBy(this.users, 'id');
+        firebase.saveUsers(this.users);
     };
 
     addUserGroup(userId, groupNumber = null) {

@@ -20,8 +20,7 @@ class Database {
 
     readUsers() {
         return usersDB.once("value").then((snapshot) => {
-            console.log(snapshot.val());
-            return JSON.parse(snapshot.val());
+            return snapshot.val();
         }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
             return [];
