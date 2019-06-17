@@ -43,6 +43,9 @@ export function isInMediaChat(msg) {
 
 
 export function getMessageContent(msg) {
+    if(!msg){
+        return 'тут чот ошибочка вышла, напиши кате, как так получилось';
+    }
     if (msg.text) {
         return msg.text
     }
@@ -60,6 +63,10 @@ export function mapByMatch(...rgs) {
 
 export function forwardToMediaChat(msg) {
     bot.forwardMessage(MEDIA_CHAT, msg.chat.id, msg.message_id)
+}
+
+export function forwardToAdminChat(msg) {
+    bot.forwardMessage(MOTHER_CHAT, msg.chat.id, msg.message_id)
 }
 
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {

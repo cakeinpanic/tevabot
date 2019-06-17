@@ -20,13 +20,15 @@ export function addUSerToGroup(userId) {
 
 export function sendMessageToGroup(msg) {
     const reply = msg.reply_to_message;
+    if(!reply){
+        return;
+    }
     const chatId = msg.chat.id;
     const textToSend = getMessageContent(reply);
     const originalMessageId = reply.message_id;
 
-    if (!reply || !isFromAdmin(msg)) {
-        return;
-    }
+    console.log(textToSend);
+
 
     bot.sendMessage(chatId,
         `выберите группу для отправки этого сообщения`,
@@ -53,12 +55,16 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
         actions.push({
             id: theMessage.message_id,
             cb: (reply) => {
-                sendOrNot(reply === 'true', textToSend, groupId);
-                bot.sendMessage(
-                    chatId,
-                    `Отправлено в группу ${groupName}`,
-                    {reply_to_message_id: originalMessageId}
-                )
+                var sendIt = reply === 'true';
+                if (sendIt) {
+                    sendOrNot(textToSend, groupId);
+                    bot.sendMessage(
+                        chatId,
+                        `Отправлено в группу ${groupName}`,
+                        {reply_to_message_id: originalMessageId}
+                    )
+                }
+
             },
             remove: true
         })
@@ -66,10 +72,7 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
 
 }
 
-function sendOrNot(reply: boolean, textToSend: string, groupId: string) {
-    if (!reply) {
-        return;
-    }
+function sendOrNot(textToSend: string, groupId: string) {
 
     if (groupId === 'all') {
         sendToAllUsers(textToSend);
@@ -84,7 +87,7 @@ function sendOrNot(reply: boolean, textToSend: string, groupId: string) {
 function sendToAllUsersInTheGroup(msg, group) {
     console.log(msg, ' writing to group ' + group);
 
-    base.groups[group].filter(t=>!!t).forEach(user => {
+    base.groups[group].filter(t => !!t).forEach(user => {
         bot.sendMessage(user, msg);
     });
 }

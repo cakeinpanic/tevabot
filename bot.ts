@@ -2,7 +2,15 @@ import {Observable, Subject} from 'rxjs/index';
 import {filter} from 'rxjs/operators';
 import {IAction} from './actions';
 import {firebase} from './firebase';
-import {forwardToMediaChat, IMessage, isFromMother, isInAdminChat, isInMediaChat, isMedia} from './utils';
+import {
+    forwardToAdminChat,
+    forwardToMediaChat,
+    IMessage,
+    isFromMother,
+    isInAdminChat,
+    isInMediaChat,
+    isMedia, mapByMatch
+} from './utils';
 
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN || '123456';
@@ -32,6 +40,7 @@ bot.on('message', msg => {
 
 $messagesToForwardToAdmins.subscribe(msg => {
     firebase.addMessageToLog(msg);
+    forwardToAdminChat(msg);
 });
 
 

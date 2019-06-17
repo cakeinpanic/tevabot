@@ -28,10 +28,10 @@ class Database {
         });
 
         firebase.readGroups().then((g) => {
-            if(!g){
+            if (!g) {
                 return
             }
-            this.groups =g
+            this.groups = g
         });
 
     }
@@ -58,7 +58,7 @@ class Database {
         firebase.saveUsers(this.users);
     };
 
-    getUserGroup(userId:number): string {
+    getUserGroup(userId: number): string {
         return Object.keys(this.groups).find((key) => {
             var res = this.groups[key].find((id) => id === userId)
             return res
