@@ -84,7 +84,7 @@ function sendOrNot(reply: boolean, textToSend: string, groupId: string) {
 function sendToAllUsersInTheGroup(msg, group) {
     console.log(msg, ' writing to group ' + group);
 
-    base.groups[group].forEach(user => {
+    base.groups[group].filter(t=>!!t).forEach(user => {
         bot.sendMessage(user, msg);
     });
 }

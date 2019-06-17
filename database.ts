@@ -6,9 +6,9 @@ export const ALL = 'all';
 class Database {
     users = [];
     groups = {
-        druzim: [],
-        datim: [],
-        kibuz: []
+        druzim: [0],
+        datim: [0],
+        kibuz: [0]
     };
 
     groupsDescription = {
@@ -26,6 +26,14 @@ class Database {
                 firebase.saveUsers(this.users);
             }
         });
+
+        firebase.readGroups().then((g) => {
+            if(!g){
+                return
+            }
+            this.groups =g
+        });
+
     }
 
 
@@ -52,7 +60,6 @@ class Database {
 
     getUserGroup(userId:number): string {
         return Object.keys(this.groups).find((key) => {
-            console.log(this.groups[key]);
             var res = this.groups[key].find((id) => id === userId)
             return res
         })
@@ -72,6 +79,8 @@ class Database {
 
         this.addUserGroup(userId);
         this.groups[groupNumber].push(userId);
+        console.log(this.groups);
+        firebase.saveGroups(this.groups);
     };
 }
 

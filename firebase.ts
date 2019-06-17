@@ -16,6 +16,8 @@ const fdb = admin.firestore();
 const db = admin.database();
 const messagesDB = db.ref('messages');
 const usersDB = db.ref('users');
+const groupsDB = db.ref('groups');
+
 const factsBD = fdb.collection('facts');
 
 
@@ -30,8 +32,7 @@ class Database {
     getFacts() {
         return factsBD.get().then((s) => {
             this.getFactsFromSnapshot(s)
-        })
-            .catch((err) => {
+        }).catch((err) => {
                 console.log('Error getting documents', err);
             });
 
@@ -42,11 +43,17 @@ class Database {
     }
 
     readUsers() {
-        return usersDB.once("value").then((snapshot) => {
-            return snapshot.val();
-        }, function (errorObject) {
-            console.log("The read failed: " + errorObject.code);
-            return [];
+        return this.getSmth(usersDB);
+    }
+
+    readGroups() {
+        return this.getSmth(groupsDB)
+    }
+
+    saveGroups(groups){
+        console.log(groups);
+        return groupsDB.set(groups).catch(t=>{
+            console.log(t);
         });
     }
 
@@ -56,12 +63,9 @@ class Database {
     }
 
     getLoggedMessages() {
-        messagesDB.once("value").then((snapshot) => {
-            console.log(snapshot.val());
-        }, function (errorObject) {
-            console.log("The read failed: " + errorObject.code);
-            return [];
-        });
+       this.getSmth(messagesDB).thne(t=>{
+           console.log(t);
+       })
     }
 
     private getFactsFromSnapshot(snapshot) {
@@ -70,6 +74,15 @@ class Database {
             res = {...res, ...t.data()}
         })
         this.facts$.next(res);
+    }
+
+    private getSmth(db){
+        return db.once("value").then((snapshot) => {
+            return snapshot.val();
+        }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+            return [];
+        });
     }
 }
 
