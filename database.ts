@@ -6,15 +6,15 @@ export const ALL = 'all';
 class Database {
     users = [];
     groups = {
-        1: [],
-        2: [],
-        3: []
+        druzim: [],
+        datim: [],
+        kibuz: []
     };
 
     groupsDescription = {
-        1: 'Друзы(1)',
-        2: 'Датишные(2)',
-        3: 'Кибуц(3)'
+        druzim: 'Друзы(1)',
+        datim: 'Датишные(2)',
+        kibuz: 'Кибуц(3)'
     }
 
     constructor() {
@@ -25,7 +25,6 @@ class Database {
             if (needToUpdate) {
                 firebase.saveUsers(this.users);
             }
-            console.log('got from db', this.users)
         });
     }
 
@@ -38,7 +37,7 @@ class Database {
     }
 
     addUser(user) {
-        const alreadyHas =  !!this.users.find((u) => {
+        const alreadyHas = !!this.users.find((u) => {
             return u.id === user.id
         });
 
@@ -50,6 +49,14 @@ class Database {
         this.users = _.uniqBy(this.users, 'id');
         firebase.saveUsers(this.users);
     };
+
+    getUserGroup(userId:number): string {
+        return Object.keys(this.groups).find((key) => {
+            console.log(this.groups[key]);
+            var res = this.groups[key].find((id) => id === userId)
+            return res
+        })
+    }
 
     addUserGroup(userId, groupNumber = null) {
         if (!groupNumber) {
@@ -65,7 +72,6 @@ class Database {
 
         this.addUserGroup(userId);
         this.groups[groupNumber].push(userId);
-        console.log(this.groups);
     };
 }
 

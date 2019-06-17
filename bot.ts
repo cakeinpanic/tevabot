@@ -18,19 +18,19 @@ export const $media: Observable<IMessage> = $messages.pipe(
     filter((t) => !isInMediaChat(t)),
     filter(isMedia));
 
-export const $messagesBliMother = $messages.pipe(
-    filter((t) => !isFromMother(t)),
+export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
-    filter((t) => !isInMediaChat(t))
+    filter((t) => !isInMediaChat(t)),
+    filter((t) => !isMedia(t))
 );
-export const MOTHER_CHAT = -123456;
+
 
 bot.on('message', msg => {
     $messages.next(msg);
-    console.log(msg);
+    // console.log(msg);
 });
 
-$messagesBliMother.subscribe(msg => {
+$messagesToForwardToAdmins.subscribe(msg => {
     firebase.addMessageToLog(msg);
 });
 

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {bot, MOTHER_CHAT} from './bot';
+import {bot} from './bot';
 
 export interface IMessage {
     text: string;
@@ -14,6 +14,7 @@ export interface IMessage {
 
 export const MOTHER = 123456;
 export const MEDIA_CHAT = -328868094;
+export const MOTHER_CHAT = -123456;
 
 export function isFromAdmin(msg) {
     const chatId = msg.from.id;
