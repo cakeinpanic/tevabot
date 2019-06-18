@@ -1,6 +1,6 @@
 import {actions, bot} from '../bot';
 import {ALL, base} from '../database';
-import {getMessageContent, isFromAdmin} from '../utils';
+import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
 
@@ -20,15 +20,12 @@ export function addUSerToGroup(userId) {
 
 export function sendMessageToGroup(msg) {
     const reply = msg.reply_to_message;
-    if(!reply){
+    if (!reply) {
         return;
     }
     const chatId = msg.chat.id;
     const textToSend = getMessageContent(reply);
     const originalMessageId = reply.message_id;
-
-    console.log(textToSend);
-
 
     bot.sendMessage(chatId,
         `выберите группу для отправки этого сообщения`,
@@ -93,5 +90,6 @@ function sendToAllUsersInTheGroup(msg, group) {
 }
 
 function sendToAllUsers(msg) {
-    Object.keys(base.groups).forEach((g) => sendToAllUsersInTheGroup(msg, g));
+    console.log(msg, ' writing to all');
+    base.users.forEach(({id}) => bot.sendMessage(id, msg));
 }

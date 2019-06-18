@@ -2,9 +2,11 @@ import * as _ from 'lodash';
 import {firebase} from './firebase';
 
 export const ALL = 'all';
-
+export interface IUser {
+    id: number
+}
 class Database {
-    users = [];
+    users:IUser[] = [];
     groups = {
         druzim: [0],
         datim: [0],

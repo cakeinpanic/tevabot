@@ -5,11 +5,11 @@ import {firebase} from './firebase';
 import {
     forwardToAdminChat,
     forwardToMediaChat,
-    IMessage, isCommand,
-    isFromMother,
+    IMessage,
+    isCommand,
     isInAdminChat,
     isInMediaChat,
-    isMedia, mapByMatch
+    isMedia
 } from './utils';
 
 const TelegramBot = require('node-telegram-bot-api');
@@ -32,7 +32,6 @@ export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isMedia(t)),
     filter((t) => !isCommand(t))
 );
-
 
 bot.on('message', msg => {
     $messages.next(msg);
