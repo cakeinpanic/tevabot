@@ -6,6 +6,8 @@ import './groups';
 import './facts';
 import './firebase';
 
+// todo: "в какой я группе", удаление бота и очистка группы
+
 const express = require('express');
 var packageInfo = require('./package.json');
 var app = express();

@@ -9,6 +9,7 @@ import {
     getUSerToReply,
     IMessage,
     isCommand,
+    isFromBot,
     isInAdminChat,
     isInMediaChat,
     isMedia
@@ -37,10 +38,12 @@ export const $messagesToForwardToAdmins = $messages.pipe(
 
 export const $replysToForwarded = $messages.pipe(
     filter((t) => isInAdminChat(t) || isInMediaChat(t)),
+    filter(t => isFromBot(t)),
     map((msg) => ({
         msg,
         replyTo: getUSerToReply(msg)
-    }))
+    })),
+    filter(({replyTo}) => !!replyTo)
 );
 
 bot.on('message', msg => {
@@ -64,7 +67,8 @@ $media.subscribe(msg => {
 $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
     console.log(replyTo);
     // replyToMessage id doesnd work
-    bot.sendMessage(replyTo.user, msg.text, {reply_to_message_id: replyTo.message});
+    bot.sendMessage(replyTo.user, msg.text);
+    // bot.sendMessage(replyTo.user, msg.text, {reply_to_message_id: replyTo.message});
 })
 export const actions: IAction[] = [];
 

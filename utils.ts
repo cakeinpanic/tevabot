@@ -101,8 +101,8 @@ export function isFromBot({reply_to_message}: IMessage) {
 
 export function getUSerToReply(msg: IMessage): {message:number,user:number} {
     var replyTo = msg.reply_to_message;
-    if(!replyTo.forward_from){
-        return
+    if(!replyTo || !replyTo.forward_from){
+        return null
     }
     console.log(msg, replyTo);
     var initialUser = replyTo.forward_from.id;
