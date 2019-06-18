@@ -72,3 +72,7 @@ export function forwardToAdminChat(msg) {
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {
     return !!document || !!video || !!voice || !!video_note || !!photo
 }
+
+export function isCommand(msg) {
+    return !!msg.text && msg.text.match(/^\//);
+}

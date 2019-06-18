@@ -5,7 +5,7 @@ import {firebase} from './firebase';
 import {
     forwardToAdminChat,
     forwardToMediaChat,
-    IMessage,
+    IMessage, isCommand,
     isFromMother,
     isInAdminChat,
     isInMediaChat,
@@ -29,7 +29,8 @@ export const $media: Observable<IMessage> = $messages.pipe(
 export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
     filter((t) => !isInMediaChat(t)),
-    filter((t) => !isMedia(t))
+    filter((t) => !isMedia(t)),
+    filter((t) => !isCommand(t))
 );
 
 
