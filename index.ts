@@ -1,3 +1,5 @@
+import './ping.ts'
+
 import './actions.ts';
 
 import './groups';
