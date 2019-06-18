@@ -4,14 +4,32 @@ import {bot} from './bot';
 export interface IMessage {
     text: string;
     video: any;
-    from: any;
-    chat: any;
     document: any;
     voice: any;
     photo: any;
     video_note: any;
+    reply_to_message: IMessage;
+    message_id: number,
+    from: {
+        id: number,
+        is_bot: boolean,
+        first_name: string,
+        username: string
+    },
+    chat: {
+        id: number,
+        title: string,
+        type: string
+    },
+    forward_from?:
+        {
+            id: number,
+            is_bot: boolean
+        }
+
 }
 
+export const BOT_ID = 123456;
 export const MOTHER = 123456;
 export const MEDIA_CHAT = -328868094;
 export const MOTHER_CHAT = -123456;
@@ -43,7 +61,7 @@ export function isInMediaChat(msg) {
 
 
 export function getMessageContent(msg) {
-    if(!msg){
+    if (!msg) {
         return 'тут чот ошибочка вышла, напиши кате, как так получилось';
     }
     if (msg.text) {
@@ -66,7 +84,7 @@ export function forwardToMediaChat(msg) {
 }
 
 export function forwardToAdminChat(msg) {
-    bot.forwardMessage(MOTHER_CHAT, msg.chat.id, msg.message_id)
+    return bot.forwardMessage(MOTHER_CHAT, msg.chat.id, msg.message_id)
 }
 
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {
@@ -75,4 +93,22 @@ export function isMedia({voice, video, photo, video_note, document}: IMessage) {
 
 export function isCommand(msg) {
     return !!msg.text && msg.text.match(/^\//);
+}
+
+export function isFromBot({reply_to_message}: IMessage) {
+    return !!reply_to_message && reply_to_message.from.id === BOT_ID
+}
+
+export function getUSerToReply(msg: IMessage): {message:number,user:number} {
+    var replyTo = msg.reply_to_message;
+    if(!replyTo.forward_from){
+        return
+    }
+    console.log(msg, replyTo);
+    var initialUser = replyTo.forward_from.id;
+
+    return {
+        user: initialUser,
+        message: replyTo.message_id
+    }
 }

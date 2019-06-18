@@ -1,10 +1,12 @@
 import {Observable, Subject} from 'rxjs/index';
-import {filter} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {IAction} from './actions';
+import {base} from './database';
 import {firebase} from './firebase';
 import {
     forwardToAdminChat,
     forwardToMediaChat,
+    getUSerToReply,
     IMessage,
     isCommand,
     isInAdminChat,
@@ -33,6 +35,14 @@ export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isCommand(t))
 );
 
+export const $replysToForwarded = $messages.pipe(
+    filter((t) => isInAdminChat(t) || isInMediaChat(t)),
+    map((msg) => ({
+        msg,
+        replyTo: getUSerToReply(msg)
+    }))
+);
+
 bot.on('message', msg => {
     $messages.next(msg);
     // console.log(msg);
@@ -40,7 +50,10 @@ bot.on('message', msg => {
 
 $messagesToForwardToAdmins.subscribe(msg => {
     firebase.addMessageToLog(msg);
-    forwardToAdminChat(msg);
+
+    forwardToAdminChat(msg).then(msg => {
+        base.addForwardedMessage(msg);
+    })
 });
 
 
@@ -48,6 +61,11 @@ $media.subscribe(msg => {
     forwardToMediaChat(msg);
 });
 
+$replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
+    console.log(replyTo);
+    // replyToMessage id doesnd work
+    bot.sendMessage(replyTo.user, msg.text, {reply_to_message_id: replyTo.message});
+})
 export const actions: IAction[] = [];
 
 

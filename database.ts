@@ -2,11 +2,13 @@ import * as _ from 'lodash';
 import {firebase} from './firebase';
 
 export const ALL = 'all';
+
 export interface IUser {
     id: number
 }
+
 class Database {
-    users:IUser[] = [];
+    users: IUser[] = [];
     groups = {
         druzim: [0],
         datim: [0],
@@ -18,6 +20,8 @@ class Database {
         datim: 'Датишные(2)',
         kibuz: 'Кибуц(3)'
     }
+
+    forwarded = []
 
     constructor() {
         firebase.readUsers().then((u) => {
@@ -44,6 +48,10 @@ class Database {
             text: this.groupsDescription[key],
             callback_data: key
         }]))
+    }
+
+    addForwardedMessage(msg) {
+        this.forwarded.push(msg);
     }
 
     addUser(user) {
