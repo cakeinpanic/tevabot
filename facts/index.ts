@@ -39,5 +39,5 @@ $getFact.subscribe(({msg}) => {
     } else {
         txt = subfacts[_.random(0, subfacts.length - 1)]
     }
-    bot.sendMessage(msg.chat.id, txt)
+    bot.sendMessage(msg.chat.id, txt + '\nЕще факт: /fact')
 })

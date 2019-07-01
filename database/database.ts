@@ -26,9 +26,6 @@ export const DESCRIPRIONS = {
 class Database {
     private users: {[key: string]: IUser} = {};
 
-
-    forwarded = []
-
     constructor() {
         firebase.readUsers().then((u) => {
             this.users = u;
@@ -57,9 +54,6 @@ class Database {
         }]))
     }
 
-    addForwardedMessage(msg) {
-        this.forwarded.push(msg);
-    }
 
     addUser(user: IUser) {
         const alreadyHas = !!this.users[user.id];
@@ -73,6 +67,7 @@ class Database {
     };
 
     getUserGroup(userId: number): string {
+        console.log(this.users);
         return this.users[userId].group;
     }
 
