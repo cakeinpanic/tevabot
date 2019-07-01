@@ -1,5 +1,5 @@
 import {actions, bot} from '../bot';
-import {ALL, base, DESCRIPRIONS} from '../database/database';
+import {ALL, base, DESCRIPRIONS, NOBODY} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
@@ -44,7 +44,10 @@ export function sendMessageToGroup(msg) {
 }
 
 function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
-    const groupName = groupId === ALL ? 'все' : DESCRIPRIONS[groupId];
+    var groupName = groupId === ALL ? 'все' : DESCRIPRIONS[groupId];
+    if(groupId===NOBODY){
+        groupName = 'людей, которые не выбрали группу'
+    }
     bot.sendMessage(
         chatId,
         `отправляю сообщение в группу ${groupName}`,
@@ -72,7 +75,7 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
 
 function sendOrNot(textToSend: string, groupId: string) {
 
-    if (groupId === 'all') {
+    if (groupId === ALL) {
         sendToAllUsers(textToSend);
         return;
     }
@@ -86,7 +89,7 @@ function sendToAllUsersInTheGroup(msg, group) {
     console.log(msg, ' writing to group ' + group);
 
     base.getUsers(group).forEach(user => {
-        bot.sendMessage(user, msg);
+        bot.sendMessage(user.id, msg);
     });
 }
 

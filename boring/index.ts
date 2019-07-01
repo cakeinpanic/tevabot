@@ -5,12 +5,11 @@ import {isFromUser, mapByMatch} from '../utils';
 const $boring = $commands.pipe(
     filter((msg) => isFromUser(msg)),
     map(mapByMatch(/\/mneskuchno/)),
-    filter(({match}) => !!match),
-    map(({msg}) => msg)
+    filter(({match}) => !!match)
 );
 
-$boring.subscribe((from) => {
-    bot.sendMessage(from.from.id, 'Тут будет угарное задание')
+$boring.subscribe(({msg}) => {
+    bot.sendMessage(msg.from.id, 'Тут будет угарное задание')
 })
 
 

@@ -1,4 +1,4 @@
-import {base} from '../database/database';
+import {ALL, base, NOBODY} from '../database/database';
 
 export const YES_NO = {
     parse_mode: 'Markdown',
@@ -24,7 +24,10 @@ export const CHOOSE_GROUP_WITH_ALL = {
     parse_mode: 'Markdown',
     remove_keyboard: true,
     reply_markup: {
-        inline_keyboard: base.getGroupsButtons.concat([[{text: 'Все', callback_data: 'all'}]]),
+        inline_keyboard: base.getGroupsButtons.concat([[{
+            text: 'Все',
+            callback_data: ALL
+        }, {text: 'Только те, кто не указал группу', callback_data: NOBODY},]]),
         resize_keyboard: true,
         one_time_keyboard: false
     }

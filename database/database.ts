@@ -1,6 +1,7 @@
 import {firebase} from './firebase';
 
 export const ALL = 'all';
+export const NOBODY = 'nobody';
 
 export interface IUser {
     id: number;
@@ -35,6 +36,9 @@ class Database {
     }
 
     getUsers(groupID = null) {
+        if(groupID === NOBODY){
+            return this.getUsersWithoutGroup()
+        }
         var allUsers = Object.values(this.users);
         if (!groupID || !DESCRIPRIONS[groupID]) {
             return allUsers
@@ -42,6 +46,9 @@ class Database {
         return allUsers.filter(({group}) => group === groupID)
     }
 
+    getUsersWithoutGroup(){
+        return Object.values(this.users).filter(({group}) => !group)
+    }
 
     get getGroupsButtons() {
         return Object.keys(GROUP).map(key => ([{
