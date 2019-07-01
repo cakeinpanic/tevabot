@@ -20,6 +20,8 @@ const groupsDB = db.ref('groups');
 
 const factsBD = fdb.collection('facts');
 
+const usersFDB = fdb.collection('users').doc('users');
+
 
 class Database {
     facts$ = new Subject<IFacts>();
@@ -33,9 +35,13 @@ class Database {
         return factsBD.get().then((s) => {
             this.getFactsFromSnapshot(s)
         }).catch((err) => {
-                console.log('Error getting documents', err);
-            });
+            console.log('Error getting documents', err);
+        });
 
+    }
+
+    addUser(user) {
+        return usersFDB.set({[user.id]:user}, {merge: true});
     }
 
     saveUsers(users) {
@@ -43,16 +49,20 @@ class Database {
     }
 
     readUsers() {
-        return this.getSmth(usersDB);
+        return usersFDB.get().then((s) => {
+            return s.data();
+        }).catch((err) => {
+            console.log('Error getting documents', err);
+        });
     }
 
     readGroups() {
         return this.getSmth(groupsDB)
     }
 
-    saveGroups(groups){
+    saveGroups(groups) {
         console.log(groups);
-        return groupsDB.set(groups).catch(t=>{
+        return groupsDB.set(groups).catch(t => {
             console.log(t);
         });
     }
@@ -63,9 +73,9 @@ class Database {
     }
 
     getLoggedMessages() {
-       this.getSmth(messagesDB).thne(t=>{
-           console.log(t);
-       })
+        this.getSmth(messagesDB).thne(t => {
+            console.log(t);
+        })
     }
 
     private getFactsFromSnapshot(snapshot) {
@@ -76,7 +86,7 @@ class Database {
         this.facts$.next(res);
     }
 
-    private getSmth(db){
+    private getSmth(db) {
         return db.once("value").then((snapshot) => {
             return snapshot.val();
         }, function (errorObject) {

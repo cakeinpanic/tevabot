@@ -48,7 +48,7 @@ export const $replysToForwarded = $messages.pipe(
 
 bot.on('message', msg => {
     $messages.next(msg);
-    console.log(msg);
+    // console.log(msg);
 });
 
 $messagesToForwardToAdmins.subscribe(msg => {

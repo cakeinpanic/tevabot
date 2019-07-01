@@ -1,19 +1,15 @@
-import * as _ from 'lodash';
 import {firebase} from './firebase';
 
 export const ALL = 'all';
 
 export interface IUser {
-    id: number
+    id: number;
+    group?: string;
+    real_name?: string;
 }
 
 class Database {
-    users: IUser[] = [];
-    groups = {
-        druzim: [0],
-        datim: [0],
-        kibuz: [0]
-    };
+    private users: {[key: string]: IUser} = {};
 
     groupsDescription = {
         druzim: 'Друзы(1)',
@@ -25,23 +21,18 @@ class Database {
 
     constructor() {
         firebase.readUsers().then((u) => {
-            const needToUpdate = this.users.length;
-            this.users = this.users.concat(u);
-
-            if (needToUpdate) {
-                firebase.saveUsers(this.users);
-            }
+            this.users = u;
         });
-
-        firebase.readGroups().then((g) => {
-            if (!g) {
-                return
-            }
-            this.groups = g
-        });
-
     }
 
+
+    getUsers(groupID = null) {
+        var allUsers = Object.values(this.users);
+        if (!groupID || !this.groupsDescription[groupID]) {
+            return allUsers
+        }
+        return allUsers.filter(({group}) => group === groupID)
+    }
 
     get getGroupsButtons() {
         return Object.keys(this.groupsDescription).map(key => ([{
@@ -54,43 +45,35 @@ class Database {
         this.forwarded.push(msg);
     }
 
-    addUser(user) {
-        const alreadyHas = !!this.users.find((u) => {
-            return u.id === user.id
-        });
-
+    addUser(user: IUser) {
+        const alreadyHas = !!this.users[user.id];
+        console.log(this.users);
+        console.log(alreadyHas);
         if (alreadyHas) {
             return;
         }
 
-        this.users.push(user);
-        this.users = _.uniqBy(this.users, 'id');
-        firebase.saveUsers(this.users);
+        this.users[user.id] = user;
+        firebase.addUser(user);
     };
 
     getUserGroup(userId: number): string {
-        return Object.keys(this.groups).find((key) => {
-            var res = this.groups[key].find((id) => id === userId)
-            return res
-        })
+        return this.users[userId].group;
     }
 
     addUserGroup(userId, groupNumber = null) {
+        var ourUser = this.users[userId];
+        console.log(this.users, ourUser);
         if (!groupNumber) {
-            _.forEach(this.groups, value => {
-                _.pull(value, userId);
-            });
+            ourUser.group = null;
+        }
+
+        if (!this.groupsDescription[groupNumber]) {
             return;
         }
 
-        if (!this.groups[groupNumber]) {
-            return;
-        }
-
-        this.addUserGroup(userId);
-        this.groups[groupNumber].push(userId);
-        console.log(this.groups);
-        firebase.saveGroups(this.groups);
+        ourUser.group = groupNumber;
+        firebase.addUser(ourUser);
     };
 }
 
