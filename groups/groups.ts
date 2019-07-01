@@ -10,7 +10,7 @@ export function addUSerToGroup(userId) {
             id: t.message_id,
             cb: (groupNumber) => {
                 base.addUserGroup(userId, groupNumber);
-                bot.sendMessage(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}`);
+                bot.sendMessage(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}. Теперь вам будет приходить информация только для этой группы`);
             },
             remove: true
         });
