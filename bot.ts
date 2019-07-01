@@ -16,19 +16,13 @@ export const $messages = new Subject<IMessage>();
 
 export const $textMessages: Observable<IMessage> = $messages.pipe(filter(({text}) => !!text));
 
-export const $media: Observable<IMessage> = $messages.pipe(
-    filter((t) => !isInAdminChat(t)),
-    filter((t) => !isInMediaChat(t)),
-    filter(isMedia)
-);
-
 export const $commands = $messages.pipe(
     filter((t) => isCommand(t))
 );
 
 bot.on('message', msg => {
     $messages.next(msg);
-    // console.log(msg);
+    console.log(msg);
 });
 
 

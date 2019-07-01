@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
-import {delay, filter, map} from 'rxjs/operators';
-import {$media, $messages, bot, MESSAGES_TO_IGNORE} from '../bot';
+import {Observable} from 'rxjs/index';
+import {delay, filter, map, tap} from 'rxjs/operators';
+import {$messages, bot, MESSAGES_TO_IGNORE} from '../bot';
 import {firebase} from '../database/firebase';
 import {
     forwardToAdminChat,
@@ -16,12 +17,20 @@ import {
 
 const FORWARDED_MESSAGES = [];
 
+export const $media: Observable<IMessage> = $messages.pipe(
+    filter((t) => !isInAdminChat(t)),
+    filter((t) => !isInMediaChat(t)),
+    filter(isMedia)
+);
+
 export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
     filter((t) => !isInMediaChat(t)),
     filter((t) => !isMedia(t)),
     filter((t) => !isCommand(t)),
     delay(500),
+    tap((t)=>{
+        console.log('message');}),
     filter(({message_id}: IMessage) => {
         var w = _.includes(MESSAGES_TO_IGNORE, message_id);
         _.pull(MESSAGES_TO_IGNORE, message_id);
@@ -40,8 +49,6 @@ export const $replysToForwarded = $messages.pipe(
 );
 
 $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
-    console.log(replyTo);
-    // replyToMessage id doesnd work
 
     var original_reply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 

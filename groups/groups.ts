@@ -19,6 +19,7 @@ export function addUSerToGroup(userId) {
 
 
 export function sendMessageToGroup(msg) {
+    console.log('TO GROUP!');
     const reply = msg.reply_to_message;
     if (!reply) {
         return;

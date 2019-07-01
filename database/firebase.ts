@@ -1,5 +1,6 @@
 import {Subject} from 'rxjs/internal/Subject';
 import {IFacts} from '../facts/index';
+import {IMessage} from '../utils';
 
 const admin = require('firebase-admin');
 
@@ -12,16 +13,10 @@ admin.initializeApp({
 
 const fdb = admin.firestore();
 
-
-const db = admin.database();
-const messagesDB = db.ref('messages');
-const usersDB = db.ref('users');
-const groupsDB = db.ref('groups');
-
 const factsBD = fdb.collection('facts');
 
 const usersFDB = fdb.collection('users').doc('users');
-
+const messagesDB = fdb.collection('messages');
 
 class Database {
     facts$ = new Subject<IFacts>();
@@ -44,10 +39,6 @@ class Database {
         return usersFDB.set({[user.id]:user}, {merge: true});
     }
 
-    saveUsers(users) {
-        usersDB.set(users);
-    }
-
     readUsers() {
         return usersFDB.get().then((s) => {
             return s.data();
@@ -56,16 +47,11 @@ class Database {
         });
     }
 
-    addMessageToLog(message) {
-        var newStoreRef = messagesDB.push();
-        newStoreRef.set(message)
+    addMessageToLog(message:IMessage) {
+        messagesDB.doc(''+message.message_id).set(message);
+
     }
 
-    getLoggedMessages() {
-        this.getSmth(messagesDB).thne(t => {
-            console.log(t);
-        })
-    }
 
     private getFactsFromSnapshot(snapshot) {
         var res: IFacts = <IFacts>{};
@@ -75,14 +61,6 @@ class Database {
         this.facts$.next(res);
     }
 
-    private getSmth(db) {
-        return db.once("value").then((snapshot) => {
-            return snapshot.val();
-        }, function (errorObject) {
-            console.log("The read failed: " + errorObject.code);
-            return [];
-        });
-    }
 }
 
 export const firebase = new Database();
