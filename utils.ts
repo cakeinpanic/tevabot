@@ -31,7 +31,7 @@ export interface IMessage {
 
 export const BOT_ID = 123456;
 export const MOTHER = 123456;
-export const MEDIA_CHAT = -328868094;
+export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
 
 export function isFromAdmin(msg) {
