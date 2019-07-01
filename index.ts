@@ -10,6 +10,7 @@ import './name';
 
 import './replys';
 import './help';
+import './boring';
 
 // todo: "в какой я группе", удаление бота и очистка группы
 
