@@ -1,9 +1,9 @@
 import {Subject} from 'rxjs/internal/Subject';
-import {IFacts} from './facts';
+import {IFacts} from '../facts/index';
 
 const admin = require('firebase-admin');
 
-const serviceAccount = require('./serviceAccountKey.json');
+const serviceAccount = require('../serviceAccountKey.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

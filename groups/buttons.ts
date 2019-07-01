@@ -1,4 +1,4 @@
-import {base} from '../database';
+import {base} from '../database/database';
 
 export const YES_NO = {
     parse_mode: 'Markdown',

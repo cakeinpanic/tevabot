@@ -1,6 +1,6 @@
 import {filter, map} from 'rxjs/operators';
 import {$textMessages} from '../bot';
-import {base} from '../database';
+import {base} from '../database/database';
 import {isFromUser, isInAdminChat, mapByMatch} from '../utils';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 

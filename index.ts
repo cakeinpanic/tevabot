@@ -4,7 +4,7 @@ import './actions.ts';
 
 import './groups';
 import './facts';
-import './firebase';
+import './database/firebase';
 
 // todo: "в какой я группе", удаление бота и очистка группы
 

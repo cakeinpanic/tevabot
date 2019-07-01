@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import {filter, map} from 'rxjs/operators';
 import {$messages, bot} from '../bot';
-import {base} from '../database';
-import {firebase} from '../firebase';
+import {base} from '../database/database';
+import {firebase} from '../database/firebase';
 import {isFromUser, mapByMatch} from '../utils';
 
 const $getFact = $messages.pipe(

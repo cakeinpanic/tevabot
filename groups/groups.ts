@@ -1,5 +1,5 @@
 import {actions, bot} from '../bot';
-import {ALL, base} from '../database';
+import {ALL, base} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 

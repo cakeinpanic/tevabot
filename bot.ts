@@ -1,8 +1,8 @@
 import {Observable, Subject} from 'rxjs/index';
 import {filter, map} from 'rxjs/operators';
 import {IAction} from './actions';
-import {base} from './database';
-import {firebase} from './firebase';
+import {base} from './database/database';
+import {firebase} from './database/firebase';
 import {
     forwardToAdminChat,
     forwardToMediaChat,
