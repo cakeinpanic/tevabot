@@ -1,5 +1,5 @@
 import {actions, bot} from '../bot';
-import {ALL, base} from '../database/database';
+import {ALL, base, DESCRIPRIONS} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
@@ -10,7 +10,7 @@ export function addUSerToGroup(userId) {
             id: t.message_id,
             cb: (groupNumber) => {
                 base.addUserGroup(userId, groupNumber);
-                bot.sendMessage(userId, `Вы добавлены в группу ${base.groupsDescription[groupNumber]}`);
+                bot.sendMessage(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}`);
             },
             remove: true
         });
@@ -43,7 +43,7 @@ export function sendMessageToGroup(msg) {
 }
 
 function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
-    const groupName = groupId === ALL ? 'все' : base.groupsDescription[groupId];
+    const groupName = groupId === ALL ? 'все' : DESCRIPRIONS[groupId];
     bot.sendMessage(
         chatId,
         `отправляю сообщение в группу ${groupName}`,

@@ -96,11 +96,4 @@ class Database {
     }
 }
 
-usersDB.on('child_added', function (snapshot, prevChildKey) {
-    // const newPost = snapshot.val();
-    // console.log('Author: ' + JSON.parse(newPost));
-    // console.log('Previous Post ID: ' + prevChildKey);
-});
-
-
 export const firebase = new Database();

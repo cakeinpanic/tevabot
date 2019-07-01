@@ -8,14 +8,23 @@ export interface IUser {
     real_name?: string;
 }
 
+export enum GROUP {
+    ahmedit = 'ahmedit',
+    city = 'city',
+    kibuz = 'kibuz',
+    druzim = 'druzim',
+}
+
+export const DESCRIPRIONS = {
+    [GROUP.ahmedit]: 'Ахмедиты(1)',
+    [GROUP.city]: 'Городская община(2)',
+    [GROUP.kibuz]: 'Кибуц(3)',
+    [GROUP.druzim]: 'Друзы(4)'
+}
+
 class Database {
     private users: {[key: string]: IUser} = {};
 
-    groupsDescription = {
-        druzim: 'Друзы(1)',
-        datim: 'Датишные(2)',
-        kibuz: 'Кибуц(3)'
-    }
 
     forwarded = []
 
@@ -25,18 +34,18 @@ class Database {
         });
     }
 
-
     getUsers(groupID = null) {
         var allUsers = Object.values(this.users);
-        if (!groupID || !this.groupsDescription[groupID]) {
+        if (!groupID || !DESCRIPRIONS[groupID]) {
             return allUsers
         }
         return allUsers.filter(({group}) => group === groupID)
     }
 
+
     get getGroupsButtons() {
-        return Object.keys(this.groupsDescription).map(key => ([{
-            text: this.groupsDescription[key],
+        return Object.keys(GROUP).map(key => ([{
+            text: DESCRIPRIONS[key],
             callback_data: key
         }]))
     }
@@ -47,8 +56,7 @@ class Database {
 
     addUser(user: IUser) {
         const alreadyHas = !!this.users[user.id];
-        console.log(this.users);
-        console.log(alreadyHas);
+
         if (alreadyHas) {
             return;
         }
@@ -63,12 +71,11 @@ class Database {
 
     addUserGroup(userId, groupNumber = null) {
         var ourUser = this.users[userId];
-        console.log(this.users, ourUser);
         if (!groupNumber) {
             ourUser.group = null;
         }
 
-        if (!this.groupsDescription[groupNumber]) {
+        if (!DESCRIPRIONS[groupNumber]) {
             return;
         }
 
