@@ -80,7 +80,7 @@ export function mapByMatch(...rgs) {
 }
 
 export function forwardToMediaChat(msg) {
-    bot.forwardMessage(MEDIA_CHAT, msg.chat.id, msg.message_id)
+    return bot.forwardMessage(MEDIA_CHAT, msg.chat.id, msg.message_id)
 }
 
 export function forwardToAdminChat(msg) {
@@ -104,7 +104,7 @@ export function getUSerToReply(msg: IMessage): {message: number, user: number} {
     if (!replyTo || !replyTo.forward_from) {
         return null
     }
-    console.log(msg, replyTo);
+
     var initialUser = replyTo.forward_from.id;
 
     return {

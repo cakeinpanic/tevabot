@@ -8,6 +8,7 @@ import './groups';
 import './facts';
 import './name';
 
+import './replys';
 
 // todo: "в какой я группе", удаление бота и очистка группы
 
