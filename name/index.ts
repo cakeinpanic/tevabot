@@ -24,7 +24,9 @@ $setName.subscribe(({msg}) => {
         .subscribe(t => {
             MESSAGES_TO_IGNORE.push(t.message_id)
             base.setName(from, t.text);
-            bot.sendMessage(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊')
-            sendAbout(t.from.id)
+            bot.sendMessage(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊').then(() => {
+                sendAbout(t.from.id);
+            })
+
         })
 });
