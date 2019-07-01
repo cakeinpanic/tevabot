@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import {filter, map} from 'rxjs/operators';
 import {$messages, bot} from '../bot';
-import {base} from '../database/database';
+import {base, GROUP} from '../database/database';
 import {firebase} from '../database/firebase';
 import {isFromUser, mapByMatch} from '../utils';
 
@@ -13,15 +13,17 @@ const $getFact = $messages.pipe(
 );
 
 export interface IFacts {
-    druzim: string[],
-    datim: string[],
-    kibuz: string[]
+    [GROUP.druzim]: string[],
+    [GROUP.kibuz]: string[],
+    [GROUP.city]: string[],
+    [GROUP.ahmedit]: string[],
 }
 
 var facts: IFacts = {
-    druzim: [],
-    datim: [],
-    kibuz: []
+    [GROUP.druzim]: [],
+    [GROUP.kibuz]: [],
+    [GROUP.city]: [],
+    [GROUP.ahmedit]: [],
 }
 
 firebase.facts$.subscribe(t => {
