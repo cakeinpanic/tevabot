@@ -2,9 +2,12 @@ import './ping.ts'
 
 import './actions.ts';
 
+import './database/firebase';
+
 import './groups';
 import './facts';
-import './database/firebase';
+import './name';
+
 
 // todo: "в какой я группе", удаление бота и очистка группы
 

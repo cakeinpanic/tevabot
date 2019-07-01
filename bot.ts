@@ -1,8 +1,10 @@
+import * as _ from 'lodash';
 import {Observable, Subject} from 'rxjs/index';
-import {filter, map} from 'rxjs/operators';
+import {delay, filter, map} from 'rxjs/operators';
 import {IAction} from './actions';
 import {base} from './database/database';
 import {firebase} from './database/firebase';
+
 import {
     forwardToAdminChat,
     forwardToMediaChat,
@@ -17,6 +19,7 @@ import {
 
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN || '123456';
+export const MESSAGES_TO_IGNORE = [];
 
 export const bot = new TelegramBot(token, {polling: true});
 
@@ -27,14 +30,26 @@ export const $textMessages: Observable<IMessage> = $messages.pipe(filter(({text}
 export const $media: Observable<IMessage> = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
     filter((t) => !isInMediaChat(t)),
-    filter(isMedia));
+    filter(isMedia)
+);
+
+export const $commands = $messages.pipe(
+    filter((t) => isCommand(t))
+);
 
 export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
     filter((t) => !isInMediaChat(t)),
     filter((t) => !isMedia(t)),
-    filter((t) => !isCommand(t))
+    filter((t) => !isCommand(t)),
+    delay(500),
+    filter(({message_id}:IMessage) => {
+        var w = _.includes(MESSAGES_TO_IGNORE,message_id);
+        _.pull(MESSAGES_TO_IGNORE, message_id);
+        return !w;
+    }),
 );
+
 
 export const $replysToForwarded = $messages.pipe(
     filter((t) => isInAdminChat(t) || isInMediaChat(t)),

@@ -56,17 +56,6 @@ class Database {
         });
     }
 
-    readGroups() {
-        return this.getSmth(groupsDB)
-    }
-
-    saveGroups(groups) {
-        console.log(groups);
-        return groupsDB.set(groups).catch(t => {
-            console.log(t);
-        });
-    }
-
     addMessageToLog(message) {
         var newStoreRef = messagesDB.push();
         newStoreRef.set(message)

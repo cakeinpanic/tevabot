@@ -91,17 +91,17 @@ export function isMedia({voice, video, photo, video_note, document}: IMessage) {
     return !!document || !!video || !!voice || !!video_note || !!photo
 }
 
-export function isCommand(msg) {
-    return !!msg.text && msg.text.match(/^\//);
+export function isCommand(msg: IMessage): boolean {
+    return !!msg.text && !!msg.text.match(/^\//);
 }
 
 export function isFromBot({reply_to_message}: IMessage) {
     return !!reply_to_message && reply_to_message.from.id === BOT_ID
 }
 
-export function getUSerToReply(msg: IMessage): {message:number,user:number} {
+export function getUSerToReply(msg: IMessage): {message: number, user: number} {
     var replyTo = msg.reply_to_message;
-    if(!replyTo || !replyTo.forward_from){
+    if (!replyTo || !replyTo.forward_from) {
         return null
     }
     console.log(msg, replyTo);

@@ -69,6 +69,14 @@ class Database {
         return this.users[userId].group;
     }
 
+    setName(userId, name: string){
+        var ourUser = this.users[userId];
+        if(!ourUser){
+            return
+        }
+        ourUser.real_name = name;
+        firebase.addUser(ourUser);
+    }
     addUserGroup(userId, groupNumber = null) {
         var ourUser = this.users[userId];
         if (!groupNumber) {

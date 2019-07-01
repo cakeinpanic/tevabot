@@ -1,12 +1,12 @@
 import {filter, map} from 'rxjs/operators';
-import {$textMessages} from '../bot';
+import {$commands, $textMessages} from '../bot';
 import {base} from '../database/database';
 import {isFromUser, isInAdminChat, mapByMatch} from '../utils';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 
-const $setGroup = $textMessages.pipe(
+const $setGroup = $commands.pipe(
     filter((msg) => isFromUser(msg)),
-    map(mapByMatch(/\/setgroup/, /\/start/)),
+    map(mapByMatch(/\/setgroup/)),
     filter(({match}) => !!match)
 );
 
