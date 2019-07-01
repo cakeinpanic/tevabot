@@ -48,7 +48,7 @@ class Database {
     }
 
     addMessageToLog(message:IMessage) {
-        messagesDB.doc(''+message.message_id).set(message);
+        messagesDB.doc(message.chat.id + '_' +message.message_id).set(message);
 
     }
 
