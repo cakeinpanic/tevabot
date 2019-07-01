@@ -1,6 +1,7 @@
 import {filter, first, map} from 'rxjs/operators';
 import {$commands, $messages, bot, MESSAGES_TO_IGNORE} from '../bot';
 import {base} from '../database/database';
+import {sendAbout} from '../help';
 import {IMessage, isFromUser, mapByMatch} from '../utils';
 
 const $start = $commands.pipe(
@@ -23,5 +24,7 @@ $setName.subscribe(({msg}) => {
         .subscribe(t => {
             MESSAGES_TO_IGNORE.push(t.message_id)
             base.setName(from, t.text);
+            bot.sendMessage(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊')
+            sendAbout(t.from.id)
         })
 });
