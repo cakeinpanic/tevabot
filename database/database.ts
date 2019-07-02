@@ -47,7 +47,7 @@ class Database {
         return Object.values(this.users).filter(({group}) => !group)
     }
 
-    get getGroupsButtons() {
+    get getGroupsButtons():{text: string, callback_data: string}[][] {
         return Object.keys(GROUP).map(key => ([{
             text: DESCRIPRIONS[key],
             callback_data: key

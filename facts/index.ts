@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import {filter, map} from 'rxjs/operators';
-import {$messages, bot, sendMessageToBot} from '../bot';
+import {$messages, sendMessageToBot} from '../bot';
 import {base, GROUP} from '../database/database';
 import {firebase} from '../database/firebase';
-import {isFromUser, mapByMatch} from '../utils';
+import {isFromUser, mapByMatch, setGroupName} from '../utils';
 
 const $getFact = $messages.pipe(
     filter(({text}) => !!text),
@@ -35,7 +35,7 @@ $getFact.subscribe(({msg}) => {
     var subfacts = facts[userGroup];
     var txt: string;
     if (!subfacts) {
-        txt = 'Выберите свою группу, пожалуйста /setgroup'
+        txt = `Выберите свою группу, пожалуйста /${setGroupName}`
     } else {
         txt = subfacts[_.random(0, subfacts.length - 1)]
     }

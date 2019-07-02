@@ -1,14 +1,21 @@
-import {actions, bot, sendMessageToBot} from '../bot';
+import {actions, sendMessageToBot} from '../bot';
 import {ALL, base, DESCRIPRIONS, NOBODY} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
 
 export function addUSerToGroup(userId) {
-    sendMessageToBot(userId, `Выберите группу`, CHOOSE_GROUP).then(t => {
+    var currentGroup = base.getUserGroup(userId);
+    console.log(currentGroup);
+    var prefix = !!currentGroup ? `Сейчас ты в группе ${DESCRIPRIONS[currentGroup]}\n` : '';
+    console.log(prefix, userId);
+    sendMessageToBot(userId, prefix + `Выберите группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,
             cb: (groupNumber) => {
+                if (groupNumber === 'false') {
+                    return
+                }
                 base.addUserGroup(userId, groupNumber);
                 sendMessageToBot(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}. Теперь вам будет приходить информация только для этой группы`);
             },
@@ -45,7 +52,7 @@ export function sendMessageToGroup(msg) {
 
 function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
     var groupName = groupId === ALL ? 'все' : DESCRIPRIONS[groupId];
-    if(groupId===NOBODY){
+    if (groupId === NOBODY) {
         groupName = 'людей, которые не выбрали группу'
     }
     sendMessageToBot(
@@ -95,7 +102,7 @@ function sendToAllUsersInTheGroup(msg, group) {
 
 function sendToAllUsers(msg) {
     console.log(msg, ' writing to all');
-    base.getUsers().forEach(({id}) => sendMessageToBot(id, msg).catch(err=>{
+    base.getUsers().forEach(({id}) => sendMessageToBot(id, msg).catch(err => {
 
     }));
 }

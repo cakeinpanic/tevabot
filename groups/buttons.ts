@@ -14,7 +14,7 @@ export const CHOOSE_GROUP = {
     parse_mode: 'Markdown',
     remove_keyboard: true,
     reply_markup: {
-        inline_keyboard: base.getGroupsButtons,
+        inline_keyboard: base.getGroupsButtons.concat([[{ text: 'Отмена', callback_data: 'false'}]]),
         resize_keyboard: true,
         one_time_keyboard: false
     }

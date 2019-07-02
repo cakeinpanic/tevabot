@@ -35,6 +35,8 @@ export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
 export const MESSAGES_CHAT = -123456;
 
+export const setGroupName ='track';
+
 export function isFromAdmin(msg) {
     const chatId = msg.from.id;
     return chatId === MOTHER;
