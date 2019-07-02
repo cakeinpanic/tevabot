@@ -35,9 +35,9 @@ $getFact.subscribe((msg) => {
     var subfacts = facts[userGroup];
     var txt: string;
     if (!subfacts) {
-        txt = `Выбери свою группу, пожалуйста: /${setGroupName}`
+        txt = `Сначала укажи свой маршрут, пожалуйста`
     } else {
         txt = subfacts[_.random(0, subfacts.length - 1)]
     }
-    sendMessageToBot(msg.chat.id, txt + '\nЕще факт: /fact')
+    sendMessageToBot(msg.chat.id, txt)
 })
