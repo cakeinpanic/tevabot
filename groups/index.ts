@@ -1,7 +1,7 @@
 import {filter, map} from 'rxjs/operators';
-import {$commands, $textMessages} from '../bot';
+import {$commands, $textMessages, sendMessageToBot} from '../bot';
 import {base} from '../database/database';
-import {isFromUser, isInAdminChat, isInMediaChat, isInMessagesChat, mapByMatch, setGroupName} from '../utils';
+import {IMessage, isFromUser, isInAdminChat, isInMediaChat, isInMessagesChat, mapByMatch, setGroupName} from '../utils';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 
 const $setGroup = $commands.pipe(
@@ -9,6 +9,11 @@ const $setGroup = $commands.pipe(
     map(mapByMatch(new RegExp(`/${setGroupName}`))),
     filter(({match}) => !!match)
 );
+
+const $getLists = $textMessages.pipe(
+    filter((msg) => isInAdminChat(msg)),
+    filter(({text}: IMessage) => text === 'список' || text === 'Список')
+    );
 
 const $sendToGroup = $textMessages.pipe(
     filter((msg) => isInAdminChat(msg) || isInMediaChat(msg) || isInMessagesChat(msg)),
@@ -22,8 +27,11 @@ const $messageFromUser = $textMessages.pipe(
     filter((msg) => !isInMessagesChat(msg))
 );
 
-$messageFromUser.subscribe((msg) => base.addUser(msg.from));
+$messageFromUser.subscribe((msg:IMessage) => base.addUser(msg.from));
 $setGroup.subscribe(({msg}) => addUSerToGroup(msg.from.id));
 
 
 $sendToGroup.subscribe(({msg}) => sendMessageToGroup(msg));
+$getLists.subscribe(msg=>{
+    sendMessageToBot(msg.chat.id, base.formGroupsList())
+})

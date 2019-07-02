@@ -6,9 +6,8 @@ import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
 export function addUSerToGroup(userId) {
     var currentGroup = base.getUserGroup(userId);
-    console.log(currentGroup);
     var prefix = !!currentGroup ? `Сейчас ты в группе ${DESCRIPRIONS[currentGroup]}\n` : '';
-    console.log(prefix, userId);
+
     sendMessageToBot(userId, prefix + `Выбери группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,

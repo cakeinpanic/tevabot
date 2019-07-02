@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {firebase} from './firebase';
 
 export const ALL = 'all';
@@ -5,6 +6,8 @@ export const NOBODY = 'nobody';
 
 export interface IUser {
     id: number;
+    username: string;
+    name: string;
     group?: string;
     real_name?: string;
 }
@@ -29,11 +32,12 @@ class Database {
     constructor() {
         firebase.readUsers().then((u) => {
             this.users = u;
+            console.log(u);
         });
     }
 
     getUsers(groupID = null) {
-        if(groupID === NOBODY){
+        if (groupID === NOBODY) {
             return this.getUsersWithoutGroup()
         }
         var allUsers = Object.values(this.users);
@@ -43,11 +47,11 @@ class Database {
         return allUsers.filter(({group}) => group === groupID)
     }
 
-    getUsersWithoutGroup(){
+    getUsersWithoutGroup() {
         return Object.values(this.users).filter(({group}) => !group)
     }
 
-    get getGroupsButtons():{text: string, callback_data: string}[][] {
+    get getGroupsButtons(): {text: string, callback_data: string}[][] {
         return Object.keys(GROUP).map(key => ([{
             text: DESCRIPRIONS[key],
             callback_data: key
@@ -71,14 +75,15 @@ class Database {
         return this.users[userId].group;
     }
 
-    setName(userId, name: string){
+    setName(userId, name: string) {
         var ourUser = this.users[userId];
-        if(!ourUser){
+        if (!ourUser) {
             return
         }
         ourUser.real_name = name;
         firebase.addUser(ourUser);
     }
+
     addUserGroup(userId, groupNumber = null) {
         var ourUser = this.users[userId];
         if (!groupNumber) {
@@ -92,6 +97,15 @@ class Database {
         ourUser.group = groupNumber;
         firebase.addUser(ourUser);
     };
+
+    formGroupsList(): string {
+        var groups = _.groupBy(this.users, 'group');
+        var k = Object.keys(groups).map((key) => {
+            return (DESCRIPRIONS[key] || 'Без группы') + '\n' + groups[key].map((u: IUser) => `@${u.username || u.name}  ${u.real_name}`).join('\n');
+        }).join('\n\n')
+
+        return k
+    }
 }
 
 export const base = new Database();

@@ -12,6 +12,7 @@ export interface IMessage {
     message_id: number,
     from: {
         id: number,
+        name: string;
         is_bot: boolean,
         first_name: string,
         username: string
@@ -34,6 +35,7 @@ export const MOTHER = 123456;
 export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
 export const MESSAGES_CHAT = -123456;
+export const LIST_CHAT = -1001404184705;
 
 export const setGroupName = 'track';
 

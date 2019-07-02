@@ -24,7 +24,7 @@ export const $commands = $textMessages.pipe(
 
 bot.on('message', msg => {
     $messages.next(msg);
-    // console.log(msg);
+    console.log(msg);
 });
 
 export function sendMessageToBot(...args){

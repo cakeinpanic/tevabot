@@ -8,7 +8,7 @@ import {
     getUSerToReply,
     IMessage,
     isCommand,
-    isFromBot,
+    isFromBot, isFromUser,
     isInAdminChat,
     isInMediaChat,
     isInMessagesChat,
@@ -20,15 +20,12 @@ import {
 const FORWARDED_MESSAGES = [];
 
 export const $media: Observable<IMessage> = $messages.pipe(
-    filter((t) => !isInAdminChat(t)),
-    filter((t) => !isInMediaChat(t)),
+    filter((t) => isFromUser(t)),
     filter(isMedia)
 );
 
 export const $messagesToForwardToAdmins = $messages.pipe(
-    filter((t) => !isInAdminChat(t)),
-    filter((t) => !isInMediaChat(t)),
-    filter((t) => !isInMessagesChat(t)),
+    filter((t) => isFromUser(t)),
     filter((t) => !isMedia(t)),
     filter((t) => !isCommand(t)),
     delay(500),
