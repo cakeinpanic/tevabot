@@ -35,7 +35,7 @@ export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
 export const MESSAGES_CHAT = -123456;
 
-export const setGroupName ='track';
+export const setGroupName = 'track';
 
 export function isFromAdmin(msg) {
     const chatId = msg.from.id;
@@ -56,6 +56,7 @@ export function isInAdminChat(msg) {
     const chatId = msg.chat.id;
     return chatId === MOTHER_CHAT;
 }
+
 export function isInMessagesChat(msg) {
     const chatId = msg.chat.id;
     return chatId === MESSAGES_CHAT;
@@ -86,12 +87,8 @@ export function mapByMatch(...rgs) {
     })
 }
 
-export function forwardToMediaChat(msg) {
-    return bot.forwardMessage(MEDIA_CHAT, msg.chat.id, msg.message_id)
-}
-
-export function forwardToMessagesChat(msg) {
-    return bot.forwardMessage(MESSAGES_CHAT, msg.chat.id, msg.message_id)
+export function forward(msg, chat) {
+    return bot.forwardMessage(chat, msg.chat.id, msg.message_id)
 }
 
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {

@@ -1,11 +1,10 @@
 import * as _ from 'lodash';
 import {Observable} from 'rxjs/index';
-import {delay, filter, map, merge, tap} from 'rxjs/operators';
+import {delay, filter, map} from 'rxjs/operators';
 import {$messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
 import {firebase} from '../database/firebase';
 import {
-    forwardToMediaChat,
-    forwardToMessagesChat,
+    forward,
     getUSerToReply,
     IMessage,
     isCommand,
@@ -13,7 +12,9 @@ import {
     isInAdminChat,
     isInMediaChat,
     isInMessagesChat,
-    isMedia
+    isMedia,
+    MEDIA_CHAT,
+    MESSAGES_CHAT
 } from '../utils';
 
 const FORWARDED_MESSAGES = [];
@@ -31,8 +32,6 @@ export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isMedia(t)),
     filter((t) => !isCommand(t)),
     delay(500),
-    tap((t)=>{
-        console.log('message');}),
     filter(({message_id}: IMessage) => {
         var w = _.includes(MESSAGES_TO_IGNORE, message_id);
         _.pull(MESSAGES_TO_IGNORE, message_id);
@@ -40,7 +39,7 @@ export const $messagesToForwardToAdmins = $messages.pipe(
     }),
 );
 
-export const $replysToForwarded = $messages.pipe(
+export const $adminReplyedToForwarded = $messages.pipe(
     filter((t) => isInMediaChat(t) || isInMediaChat(t)),
     filter(t => isFromBot(t)),
     map((msg) => ({
@@ -50,7 +49,7 @@ export const $replysToForwarded = $messages.pipe(
     filter(({replyTo}) => !!replyTo)
 );
 
-$replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
+$adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
     var originalReply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 
     if (!!originalReply) {
@@ -66,18 +65,17 @@ $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: nu
 
 $messagesToForwardToAdmins.subscribe(initial => {
     firebase.addMessageToLog(initial);
-
-    forwardToMessagesChat(initial).then(newOne => {
-        FORWARDED_MESSAGES.push({initial: initial.message_id, newOne: newOne.message_id})
-    })
+    forwardMessage(initial, MESSAGES_CHAT)
 });
 
 $media.subscribe(initial => {
     firebase.addMessageToLog(initial);
-
-    forwardToMediaChat(initial).then(newOne => {
-        FORWARDED_MESSAGES.push({initial: initial.message_id, newOne: newOne.message_id})
-    });
+    forwardMessage(initial, MEDIA_CHAT)
 });
 
 
+function forwardMessage(initial, chat) {
+    forward(initial, chat).then(newOne => {
+        FORWARDED_MESSAGES.push({initial: initial.message_id, newOne: newOne.message_id})
+    })
+}
