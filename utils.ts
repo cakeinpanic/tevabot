@@ -33,6 +33,7 @@ export const BOT_ID = 123456;
 export const MOTHER = 123456;
 export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
+export const MESSAGES_CHAT = -123456;
 
 export function isFromAdmin(msg) {
     const chatId = msg.from.id;
@@ -52,6 +53,10 @@ export function isFromUser(msg) {
 export function isInAdminChat(msg) {
     const chatId = msg.chat.id;
     return chatId === MOTHER_CHAT;
+}
+export function isInMessagesChat(msg) {
+    const chatId = msg.chat.id;
+    return chatId === MESSAGES_CHAT;
 }
 
 export function isInMediaChat(msg) {
@@ -83,8 +88,8 @@ export function forwardToMediaChat(msg) {
     return bot.forwardMessage(MEDIA_CHAT, msg.chat.id, msg.message_id)
 }
 
-export function forwardToAdminChat(msg) {
-    return bot.forwardMessage(MOTHER_CHAT, msg.chat.id, msg.message_id)
+export function forwardToMessagesChat(msg) {
+    return bot.forwardMessage(MESSAGES_CHAT, msg.chat.id, msg.message_id)
 }
 
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {

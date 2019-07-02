@@ -49,10 +49,12 @@ bot.on('callback_query', (t: IActionReaction) => {
             }
         );
     }
+
     if (action.remove) {
         bot.deleteMessage(t.message.chat.id, t.message.message_id);
         return;
     }
+
     bot.editMessageReplyMarkup(
         {
             parse_mode: 'Markdown'

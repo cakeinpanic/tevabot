@@ -1,16 +1,16 @@
-import {actions, bot} from '../bot';
+import {actions, bot, sendMessageToBot} from '../bot';
 import {ALL, base, DESCRIPRIONS, NOBODY} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
 
 export function addUSerToGroup(userId) {
-    bot.sendMessage(userId, `Выберите группу`, CHOOSE_GROUP).then(t => {
+    sendMessageToBot(userId, `Выберите группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,
             cb: (groupNumber) => {
                 base.addUserGroup(userId, groupNumber);
-                bot.sendMessage(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}. Теперь вам будет приходить информация только для этой группы`);
+                sendMessageToBot(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}. Теперь вам будет приходить информация только для этой группы`);
             },
             remove: true
         });
@@ -28,7 +28,7 @@ export function sendMessageToGroup(msg) {
     const textToSend = getMessageContent(reply);
     const originalMessageId = reply.message_id;
 
-    bot.sendMessage(chatId,
+    sendMessageToBot(chatId,
         `выберите группу для отправки этого сообщения`,
         {...CHOOSE_GROUP_WITH_ALL, ... {reply_to_message_id: originalMessageId}}
     )
@@ -48,7 +48,7 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
     if(groupId===NOBODY){
         groupName = 'людей, которые не выбрали группу'
     }
-    bot.sendMessage(
+    sendMessageToBot(
         chatId,
         `отправляю сообщение в группу ${groupName}`,
         {...YES_NO, ...{reply_to_message_id: originalMessageId}}
@@ -59,7 +59,7 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
                 var sendIt = reply === 'true';
                 if (sendIt) {
                     sendOrNot(textToSend, groupId);
-                    bot.sendMessage(
+                    sendMessageToBot(
                         chatId,
                         `Отправлено в группу ${groupName}`,
                         {reply_to_message_id: originalMessageId}
@@ -89,11 +89,13 @@ function sendToAllUsersInTheGroup(msg, group) {
     console.log(msg, ' writing to group ' + group);
 
     base.getUsers(group).forEach(user => {
-        bot.sendMessage(user.id, msg);
+        sendMessageToBot(user.id, msg)
     });
 }
 
 function sendToAllUsers(msg) {
     console.log(msg, ' writing to all');
-    base.getUsers().forEach(({id}) => bot.sendMessage(id, msg));
+    base.getUsers().forEach(({id}) => sendMessageToBot(id, msg).catch(err=>{
+
+    }));
 }

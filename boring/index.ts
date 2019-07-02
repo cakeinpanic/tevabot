@@ -1,5 +1,5 @@
 import {filter, map} from 'rxjs/operators';
-import {$commands, bot} from '../bot';
+import {$commands, bot, sendMessageToBot} from '../bot';
 import {isFromUser, mapByMatch} from '../utils';
 
 const $boring = $commands.pipe(
@@ -9,7 +9,7 @@ const $boring = $commands.pipe(
 );
 
 $boring.subscribe(({msg}) => {
-    bot.sendMessage(msg.from.id, 'Тут будет угарное задание')
+    sendMessageToBot(msg.from.id, 'Тут будет угарное задание')
 })
 
 

@@ -1,17 +1,18 @@
 import * as _ from 'lodash';
 import {Observable} from 'rxjs/index';
 import {delay, filter, map, tap} from 'rxjs/operators';
-import {$messages, bot, MESSAGES_TO_IGNORE} from '../bot';
+import {$messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
 import {firebase} from '../database/firebase';
 import {
-    forwardToAdminChat,
     forwardToMediaChat,
+    forwardToMessagesChat,
     getUSerToReply,
     IMessage,
     isCommand,
     isFromBot,
     isInAdminChat,
     isInMediaChat,
+    isInMessagesChat,
     isMedia
 } from '../utils';
 
@@ -26,6 +27,7 @@ export const $media: Observable<IMessage> = $messages.pipe(
 export const $messagesToForwardToAdmins = $messages.pipe(
     filter((t) => !isInAdminChat(t)),
     filter((t) => !isInMediaChat(t)),
+    filter((t) => !isInMessagesChat(t)),
     filter((t) => !isMedia(t)),
     filter((t) => !isCommand(t)),
     delay(500),
@@ -39,7 +41,7 @@ export const $messagesToForwardToAdmins = $messages.pipe(
 );
 
 export const $replysToForwarded = $messages.pipe(
-    filter((t) => isInAdminChat(t) || isInMediaChat(t)),
+    filter((t) => isInMediaChat(t) || isInMediaChat(t)),
     filter(t => isFromBot(t)),
     map((msg) => ({
         msg,
@@ -53,11 +55,11 @@ $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: nu
     var original_reply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 
     if (original_reply) {
-        bot.sendMessage(replyTo.user, msg.text, {reply_to_message_id: original_reply.initial});
+        sendMessageToBot(replyTo.user, msg.text, {reply_to_message_id: original_reply.initial});
         _.pull(FORWARDED_MESSAGES, original_reply);
         return
     }
-    bot.sendMessage(replyTo.user, msg.text);
+    sendMessageToBot(replyTo.user, msg.text);
 
 });
 
@@ -65,7 +67,7 @@ $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: nu
 $messagesToForwardToAdmins.subscribe(initial => {
     firebase.addMessageToLog(initial);
 
-    forwardToAdminChat(initial).then(newOne => {
+    forwardToMessagesChat(initial).then(newOne => {
         FORWARDED_MESSAGES.push({initial: initial.message_id, newOne: newOne.message_id})
     })
 });

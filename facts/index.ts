@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {filter, map} from 'rxjs/operators';
-import {$messages, bot} from '../bot';
+import {$messages, bot, sendMessageToBot} from '../bot';
 import {base, GROUP} from '../database/database';
 import {firebase} from '../database/firebase';
 import {isFromUser, mapByMatch} from '../utils';
@@ -39,5 +39,5 @@ $getFact.subscribe(({msg}) => {
     } else {
         txt = subfacts[_.random(0, subfacts.length - 1)]
     }
-    bot.sendMessage(msg.chat.id, txt + '\nЕще факт: /fact')
+    sendMessageToBot(msg.chat.id, txt + '\nЕще факт: /fact')
 })

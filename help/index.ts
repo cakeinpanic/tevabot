@@ -1,5 +1,5 @@
 import {filter, map} from 'rxjs/operators';
-import {$commands, bot} from '../bot';
+import {$commands, bot, sendMessageToBot} from '../bot';
 import {isFromUser, mapByMatch} from '../utils';
 
 
@@ -30,6 +30,6 @@ $help.subscribe((from) => {
 })
 
 export function sendAbout(userId) {
-    bot.sendMessage(userId, helpText)
+    sendMessageToBot(userId, helpText)
 }
 
