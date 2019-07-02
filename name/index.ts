@@ -1,5 +1,5 @@
 import {filter, first, map} from 'rxjs/operators';
-import {$commands, $messages, bot, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
+import {$commands, $messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
 import {base} from '../database/database';
 import {sendAbout} from '../help';
 import {IMessage, isFromUser, mapByMatch} from '../utils';
@@ -24,9 +24,9 @@ $setName.subscribe(({msg}) => {
         .subscribe(t => {
             MESSAGES_TO_IGNORE.push(t.message_id)
             base.setName(from, t.text);
-            sendMessageToBot(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊').then(() => {
-                sendAbout(t.from.id);
-            })
+
+            sendAbout(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊\n');
+
 
         })
 });

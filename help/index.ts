@@ -29,7 +29,7 @@ $help.subscribe((from) => {
     sendAbout(from.from.id)
 })
 
-export function sendAbout(userId) {
-    sendMessageToBot(userId, helpText)
+export function sendAbout(userId, prefix = '') {
+    sendMessageToBot(userId, prefix + helpText)
 }
 
