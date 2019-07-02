@@ -30,9 +30,8 @@ class Database {
     private users: {[key: string]: IUser} = {};
 
     constructor() {
-        firebase.readUsers().then((u) => {
+        firebase.users$.subscribe((u) => {
             this.users = u;
-            console.log(u);
         });
     }
 
@@ -71,7 +70,6 @@ class Database {
     };
 
     getUserGroup(userId: number): string {
-        console.log(this.users);
         return this.users[userId].group;
     }
 
