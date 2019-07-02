@@ -9,7 +9,7 @@ export function addUSerToGroup(userId) {
     console.log(currentGroup);
     var prefix = !!currentGroup ? `Сейчас ты в группе ${DESCRIPRIONS[currentGroup]}\n` : '';
     console.log(prefix, userId);
-    sendMessageToBot(userId, prefix + `Выберите группу`, CHOOSE_GROUP).then(t => {
+    sendMessageToBot(userId, prefix + `Выбери группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,
             cb: (groupNumber) => {
@@ -17,7 +17,7 @@ export function addUSerToGroup(userId) {
                     return
                 }
                 base.addUserGroup(userId, groupNumber);
-                sendMessageToBot(userId, `Вы добавлены в группу ${DESCRIPRIONS[groupNumber]}. Теперь вам будет приходить информация только для этой группы`);
+                sendMessageToBot(userId, `Ты добавлен в группу ${DESCRIPRIONS[groupNumber]}. Теперь тебе будет приходить информация только для этой группы`);
             },
             remove: true
         });

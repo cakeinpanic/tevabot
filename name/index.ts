@@ -15,14 +15,14 @@ const $setName = $start.pipe(
 
 $setName.subscribe(({msg}) => {
     var from = msg.from.id;
-    sendMessageToBot(from, 'Привет! Укажи, пожалуйста, свое имя и фамилию(чтобы мы могли сверить списки). И мы сразу же начнем!');
+    sendMessageToBot(from, 'Привет! Укажи, пожалуйста, свое имя и фамилию (чтобы мы могли сверить списки). И мы сразу же начнем!');
     $messages
         .pipe(
             filter((m: IMessage) => from === m.from.id),
             first()
         )
         .subscribe(t => {
-            MESSAGES_TO_IGNORE.push(t.message_id)
+            MESSAGES_TO_IGNORE.push(t.message_id);
             base.setName(from, t.text);
 
             sendAbout(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊\n');

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {Observable} from 'rxjs/index';
-import {delay, filter, map, tap} from 'rxjs/operators';
+import {delay, filter, map, merge, tap} from 'rxjs/operators';
 import {$messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
 import {firebase} from '../database/firebase';
 import {
@@ -51,14 +51,14 @@ export const $replysToForwarded = $messages.pipe(
 );
 
 $replysToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
+    var originalReply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 
-    var original_reply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
-
-    if (original_reply) {
-        sendMessageToBot(replyTo.user, msg.text, {reply_to_message_id: original_reply.initial});
-        _.pull(FORWARDED_MESSAGES, original_reply);
+    if (!!originalReply) {
+        sendMessageToBot(replyTo.user, msg.text, {reply_to_message_id: originalReply.initial});
+        _.pull(FORWARDED_MESSAGES, originalReply);
         return
     }
+
     sendMessageToBot(replyTo.user, msg.text);
 
 });

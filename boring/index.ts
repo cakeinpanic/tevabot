@@ -1,5 +1,5 @@
 import {filter, map} from 'rxjs/operators';
-import {$commands, bot, sendMessageToBot} from '../bot';
+import {$commands, sendMessageToBot} from '../bot';
 import {isFromUser, mapByMatch} from '../utils';
 
 const $boring = $commands.pipe(

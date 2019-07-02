@@ -35,7 +35,7 @@ $getFact.subscribe(({msg}) => {
     var subfacts = facts[userGroup];
     var txt: string;
     if (!subfacts) {
-        txt = `Выберите свою группу, пожалуйста /${setGroupName}`
+        txt = `Выбери свою группу, пожалуйста: /${setGroupName}`
     } else {
         txt = subfacts[_.random(0, subfacts.length - 1)]
     }
