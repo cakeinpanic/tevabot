@@ -7,7 +7,8 @@ export const NOBODY = 'nobody';
 export interface IUser {
     id: number;
     username: string;
-    name: string;
+    first_name: string;
+    last_name: string;
     group?: string;
     real_name?: string;
 }
@@ -20,10 +21,10 @@ export enum GROUP {
 }
 
 export const DESCRIPRIONS = {
-    [GROUP.ahmedit]: 'Ахмедиты(1)',
-    [GROUP.city]: 'Городская община(2)',
-    [GROUP.kibuz]: 'Кибуц(3)',
-    [GROUP.druzim]: 'Друзы(4)'
+    [GROUP.ahmedit]: 'Ахмедиты',
+    [GROUP.city]: 'Городская община',
+    [GROUP.kibuz]: 'Кибуц',
+    [GROUP.druzim]: 'Друзы'
 }
 
 class Database {
@@ -99,10 +100,17 @@ class Database {
     formGroupsList(): string {
         var groups = _.groupBy(this.users, 'group');
         var k = Object.keys(groups).map((key) => {
-            return (DESCRIPRIONS[key] || 'Без группы') + '\n' + groups[key].map((u: IUser) => `@${u.username || u.name}  ${u.real_name}`).join('\n');
+            return `${(DESCRIPRIONS[key] || 'Без группы')} \n` + groups[key].map((u: IUser) => `${this.getUserMention(u)}  ${u.real_name}`).join('\n');
         }).join('\n\n')
 
         return k
+    }
+
+    private getUserMention(user:IUser):string{
+        if (user.username){
+            return `[@${user.username}](tg://user?id=${user.id})`
+        }
+        return `[${[user.first_name, user.last_name].filter(t=>!!t).join(' ')}](tg://user?id=${user.id})`
     }
 }
 

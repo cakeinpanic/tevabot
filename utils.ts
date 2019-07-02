@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {bot} from './bot';
+import {IUser} from './database/database';
 
 export interface IMessage {
     text: string;
@@ -10,13 +11,7 @@ export interface IMessage {
     video_note: any;
     reply_to_message: IMessage;
     message_id: number,
-    from: {
-        id: number,
-        name: string;
-        is_bot: boolean,
-        first_name: string,
-        username: string
-    },
+    from: IUser,
     chat: {
         id: number,
         title: string,

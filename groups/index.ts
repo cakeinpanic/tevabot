@@ -13,7 +13,7 @@ const $setGroup = $commands.pipe(
 const $getLists = $textMessages.pipe(
     filter((msg) => isInAdminChat(msg)),
     filter(({text}: IMessage) => text === 'список' || text === 'Список')
-    );
+);
 
 const $sendToGroup = $textMessages.pipe(
     filter((msg) => isInAdminChat(msg) || isInMediaChat(msg) || isInMessagesChat(msg)),
@@ -27,11 +27,11 @@ const $messageFromUser = $textMessages.pipe(
     filter((msg) => !isInMessagesChat(msg))
 );
 
-$messageFromUser.subscribe((msg:IMessage) => base.addUser(msg.from));
+$messageFromUser.subscribe((msg: IMessage) => base.addUser(msg.from));
 $setGroup.subscribe(({msg}) => addUSerToGroup(msg.from.id));
 
 
 $sendToGroup.subscribe(({msg}) => sendMessageToGroup(msg));
-$getLists.subscribe(msg=>{
-    sendMessageToBot(msg.chat.id, base.formGroupsList())
+$getLists.subscribe(msg => {
+    sendMessageToBot(msg.chat.id, base.formGroupsList(), {parse_mode: 'Markdown'})
 })

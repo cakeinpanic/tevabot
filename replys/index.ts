@@ -8,10 +8,9 @@ import {
     getUSerToReply,
     IMessage,
     isCommand,
-    isFromBot, isFromUser,
-    isInAdminChat,
+    isFromBot,
+    isFromUser,
     isInMediaChat,
-    isInMessagesChat,
     isMedia,
     MEDIA_CHAT,
     MESSAGES_CHAT
