@@ -21,10 +21,10 @@ export enum GROUP {
 }
 
 export const DESCRIPRIONS = {
-    [GROUP.ahmedit]: 'Ахмедиты',
-    [GROUP.city]: 'Городская община',
-    [GROUP.kibuz]: 'Кибуц',
-    [GROUP.druzim]: 'Друзы'
+    [GROUP.ahmedit]: 'Ахмедиты ⚪',
+    [GROUP.city]: 'Городская община ⚫',
+    [GROUP.kibuz]: 'Кибуц 🔴',
+    [GROUP.druzim]: 'Друзы 🔵 '
 }
 
 class Database {
