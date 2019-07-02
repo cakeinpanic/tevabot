@@ -1,15 +1,15 @@
 import * as _ from 'lodash';
-import {filter, map} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import {$messages, sendMessageToBot} from '../bot';
 import {base, GROUP} from '../database/database';
 import {firebase} from '../database/firebase';
-import {isFromUser, mapByMatch, setGroupName} from '../utils';
+import {FACT} from '../groups/buttons';
+import {filterByWord, isFromUser, setGroupName} from '../utils';
 
 const $getFact = $messages.pipe(
     filter(({text}) => !!text),
     filter((msg) => isFromUser(msg)),
-    map(mapByMatch(/\/fact/)),
-    filter(({match}) => !!match)
+    filter(t=> filterByWord(t,FACT))
 );
 
 export interface IFacts {
@@ -30,7 +30,7 @@ firebase.facts$.subscribe(t => {
     facts = t;
 });
 
-$getFact.subscribe(({msg}) => {
+$getFact.subscribe((msg) => {
     var userGroup = base.getUserGroup(msg.from.id);
     var subfacts = facts[userGroup];
     var txt: string;

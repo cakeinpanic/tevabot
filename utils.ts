@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
+import {filter} from 'rxjs/operators';
 import {bot} from './bot';
 import {IUser} from './database/database';
+import {BORED, FACT, HELP, SET_GROUP} from './groups/buttons';
 
 export interface IMessage {
     text: string;
@@ -84,6 +86,11 @@ export function mapByMatch(...rgs) {
     })
 }
 
+export function filterByWord(msg, word) {
+    return msg.text && msg.text === word;
+}
+
+
 export function forward(msg, chat) {
     return bot.forwardMessage(chat, msg.chat.id, msg.message_id)
 }
@@ -93,7 +100,7 @@ export function isMedia({voice, video, photo, video_note, document}: IMessage) {
 }
 
 export function isCommand(msg: IMessage): boolean {
-    return !!msg.text && !!msg.text.match(/^\//);
+    return !!msg.text && !!msg.text.match(/^\//) || [BORED, SET_GROUP, HELP, FACT].some(t=> t=== msg.text);
 }
 
 export function isFromBot({reply_to_message}: IMessage) {

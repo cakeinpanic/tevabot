@@ -1,13 +1,13 @@
 import {filter, map} from 'rxjs/operators';
 import {$commands, $textMessages, sendMessageToBot} from '../bot';
 import {base} from '../database/database';
-import {IMessage, isFromUser, isInAdminChat, isInMediaChat, isInMessagesChat, mapByMatch, setGroupName} from '../utils';
+import {filterByWord, IMessage, isFromUser, isInAdminChat, isInMediaChat, isInMessagesChat, mapByMatch} from '../utils';
+import {SET_GROUP} from './buttons';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 
 const $setGroup = $commands.pipe(
     filter((msg) => isFromUser(msg)),
-    map(mapByMatch(new RegExp(`/${setGroupName}`))),
-    filter(({match}) => !!match)
+    filter(t => filterByWord(t, SET_GROUP))
 );
 
 const $getLists = $textMessages.pipe(
@@ -28,7 +28,7 @@ const $messageFromUser = $textMessages.pipe(
 );
 
 $messageFromUser.subscribe((msg: IMessage) => base.addUser(msg.from));
-$setGroup.subscribe(({msg}) => addUSerToGroup(msg.from.id));
+$setGroup.subscribe((msg) => addUSerToGroup(msg.from.id));
 
 
 $sendToGroup.subscribe(({msg}) => sendMessageToGroup(msg));

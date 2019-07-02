@@ -33,7 +33,7 @@ export function sendMessageToBot(...args){
         //DO NOT REMOVE RETURN!!
         return t;
     }).catch(err=>{
-
+        console.log(err);
     });
 }
 
