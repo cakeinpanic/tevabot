@@ -1,4 +1,4 @@
-import {ALL, base, NOBODY} from '../database/database';
+import {ALL, base, NOBODY, NOT_GREETED} from '../database/database';
 
 export const BORED = 'Мне скучно';
 export const SET_GROUP = "Указать свой маршрут";
@@ -58,10 +58,18 @@ export const CHOOSE_GROUP_WITH_ALL = {
     parse_mode: 'Markdown',
     remove_keyboard: true,
     reply_markup: {
-        inline_keyboard: base.getGroupsButtons.concat([[{
-            text: 'Все',
-            callback_data: ALL
-        }, {text: 'Только те, кто не указал группу', callback_data: NOBODY},]]),
+        inline_keyboard: base.getGroupsButtons.concat([
+            [{
+                text: 'Все',
+                callback_data: ALL
+            },
+                {text: 'Только те, кто не указал группу', callback_data: NOBODY},
+            ],
+            [{
+                text: 'Те, кого еще не приветствовали',
+                callback_data: NOT_GREETED
+            }]
+        ]),
         resize_keyboard: true,
         one_time_keyboard: false
     }

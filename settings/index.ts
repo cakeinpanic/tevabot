@@ -1,8 +1,5 @@
 import {distinctUntilChanged, map} from 'rxjs/operators';
-import {bot} from '../bot';
 import {firebase} from '../database/firebase';
-import {last} from '../bot';
-import {INLINE_CB, INLINE_CB_BORING} from '../groups/buttons';
 
 export interface ISettings {
     activated: boolean;
