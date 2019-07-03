@@ -34,7 +34,6 @@ $passive.subscribe((msg) => {
 
 firebase.$boring.subscribe(t => {
     BORING_DATA = t;
-    console.log(t);
 })
 
 
