@@ -1,5 +1,5 @@
 import {actions, sendMessageToBot} from '../bot';
-import {ALL, base, DESCRIPRIONS, NOBODY} from '../database/database';
+import {ALL, base, DESCRIPRIONS, NOBODY, NOT_GREETED} from '../database/database';
 import {getMessageContent} from '../utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
 
@@ -53,6 +53,9 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
     var groupName = groupId === ALL ? 'все' : DESCRIPRIONS[groupId];
     if (groupId === NOBODY) {
         groupName = 'людей, которые не выбрали группу'
+    }
+    if (groupId === NOT_GREETED) {
+        groupName = 'тех, с кем еще не поздоровались'
     }
     sendMessageToBot(
         chatId,

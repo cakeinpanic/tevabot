@@ -3,6 +3,7 @@ import {firebase} from './firebase';
 
 export const ALL = 'all';
 export const NOBODY = 'nobody';
+export const NOT_GREETED = 'nogreeted';
 
 export interface IUser {
     id: number;
@@ -11,6 +12,7 @@ export interface IUser {
     last_name: string;
     group?: string;
     real_name?: string;
+    greeted: boolean;
 }
 
 export enum GROUP {
@@ -39,6 +41,10 @@ class Database {
     getUsers(groupID = null) {
         if (groupID === NOBODY) {
             return this.getUsersWithoutGroup()
+        }
+
+        if (groupID === NOT_GREETED) {
+            return this.getNotGreeted()
         }
         var allUsers = Object.values(this.users);
         if (!groupID || !DESCRIPRIONS[groupID]) {
@@ -106,11 +112,20 @@ class Database {
         return k
     }
 
-    private getUserMention(user:IUser):string{
-        if (user.username){
+    getNotGreeted() {
+        var users = Object.values(this.users).filter(({greeted}) => !greeted);
+        users.forEach(u => {
+            u.greeted = true;
+            firebase.addUser(u);
+        });
+        return users;
+    }
+
+    private getUserMention(user: IUser): string {
+        if (user.username) {
             return `[@${user.username}](tg://user?id=${user.id})`
         }
-        return `[${[user.first_name, user.last_name].filter(t=>!!t).join(' ')}](tg://user?id=${user.id})`
+        return `[${[user.first_name, user.last_name].filter(t => !!t).join(' ')}](tg://user?id=${user.id})`
     }
 }
 
