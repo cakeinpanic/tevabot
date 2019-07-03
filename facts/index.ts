@@ -18,6 +18,7 @@ export interface IFacts {
     [GROUP.kibuz]: string[],
     [GROUP.city]: string[],
     [GROUP.ahmedit]: string[],
+    common: string[]
 }
 
 var facts: IFacts = {
@@ -25,10 +26,15 @@ var facts: IFacts = {
     [GROUP.kibuz]: [],
     [GROUP.city]: [],
     [GROUP.ahmedit]: [],
+    common: []
 }
 
 firebase.facts$.subscribe(t => {
     facts = t;
+    facts[GROUP.druzim]= facts[GROUP.druzim].concat(facts.common);
+    facts[GROUP.kibuz]= facts[GROUP.kibuz].concat(facts.common);
+    facts[GROUP.city]= facts[GROUP.city].concat(facts.common);
+    facts[GROUP.ahmedit]= facts[GROUP.ahmedit].concat(facts.common);
 });
 
 const $active = $getFact.pipe(filter(() => CURRENT_SETTINGS.activated));
