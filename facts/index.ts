@@ -4,12 +4,13 @@ import {$messages, sendMessageToBot} from '../bot';
 import {base, GROUP} from '../database/database';
 import {firebase} from '../database/firebase';
 import {FACT} from '../groups/buttons';
-import {filterByWord, isFromUser, setGroupName} from '../utils';
+import {CURRENT_SETTINGS} from '../settings';
+import {filterByWord, isFromUser, replyPassive} from '../utils';
 
 const $getFact = $messages.pipe(
     filter(({text}) => !!text),
     filter((msg) => isFromUser(msg)),
-    filter(t=> filterByWord(t,FACT))
+    filter(t => filterByWord(t, FACT))
 );
 
 export interface IFacts {
@@ -30,7 +31,12 @@ firebase.facts$.subscribe(t => {
     facts = t;
 });
 
-$getFact.subscribe((msg) => {
+const $active = $getFact.pipe(filter(() => CURRENT_SETTINGS.activated));
+
+const $passive = $getFact.pipe(filter(() => !CURRENT_SETTINGS.activated));
+
+
+$active.subscribe((msg) => {
     var userGroup = base.getUserGroup(msg.from.id);
     var subfacts = facts[userGroup];
     var txt: string;
@@ -41,3 +47,8 @@ $getFact.subscribe((msg) => {
     }
     sendMessageToBot(msg.chat.id, txt)
 })
+
+
+$passive.subscribe((msg) => {
+    replyPassive(msg);
+});

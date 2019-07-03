@@ -8,7 +8,7 @@ import {
     getUSerToReply,
     IMessage,
     isCommand,
-    isFromBot,
+    replyToBot,
     isFromUser,
     isInMediaChat,
     isMedia,
@@ -37,7 +37,7 @@ export const $messagesToForwardToAdmins = $messages.pipe(
 
 export const $adminReplyedToForwarded = $messages.pipe(
     filter((t) => isInMediaChat(t) || isInMediaChat(t)),
-    filter(t => isFromBot(t)),
+    filter(t => replyToBot(t)),
     map((msg) => ({
         msg,
         replyTo: getUSerToReply(msg)

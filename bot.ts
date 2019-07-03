@@ -1,6 +1,7 @@
 import {Observable, Subject} from 'rxjs/index';
 import {filter} from 'rxjs/operators';
 import {IAction} from './actions';
+import {CURRENT_SETTINGS} from './settings';
 
 import {IMessage, isCommand} from './utils';
 
@@ -22,17 +23,20 @@ export const $commands = $textMessages.pipe(
     filter((t) => isCommand(t))
 );
 
+
+export var last: IMessage = null;
+
 bot.on('message', msg => {
     $messages.next(msg);
     // console.log(msg);
 });
 
-export function sendMessageToBot(...args){
-    return bot.sendMessage(...args).then(t=>{
-        // console.log('sent!');
+export function sendMessageToBot(...args) {
+    return bot.sendMessage(...args).then(t => {
+        last = t;
         //DO NOT REMOVE RETURN!!
         return t;
-    }).catch(err=>{
+    }).catch(err => {
         console.log(err);
     });
 }

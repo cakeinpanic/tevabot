@@ -41,6 +41,19 @@ export const INLINE_CB = {
     }
 };
 
+export const INLINE_CB_BORING = {
+    parse_mode: 'Markdown',
+    remove_keyboard: false,
+    reply_markup: {
+        keyboard: [
+            [HELP, SET_GROUP],
+            [FACT, BORED]
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true
+    }
+};
+
 export const CHOOSE_GROUP_WITH_ALL = {
     parse_mode: 'Markdown',
     remove_keyboard: true,

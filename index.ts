@@ -11,7 +11,7 @@ import './name';
 import './replys';
 import './help';
 import './boring';
-
+import './settings'
 // todo: "в какой я группе", удаление бота и очистка группы
 
 const express = require('express');

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {filter} from 'rxjs/operators';
-import {bot} from './bot';
+import {bot, sendMessageToBot} from './bot';
 import {IUser} from './database/database';
 import {BORED, FACT, HELP, SET_GROUP} from './groups/buttons';
 
@@ -36,9 +36,8 @@ export const LIST_CHAT = -1001404184705;
 
 export const setGroupName = 'track';
 
-export function isFromAdmin(msg) {
-    const chatId = msg.from.id;
-    return chatId === MOTHER;
+export function isFromBot(msg):boolean {
+    return msg.from.id === BOT_ID
 }
 
 export function isFromMother(msg) {
@@ -103,7 +102,7 @@ export function isCommand(msg: IMessage): boolean {
     return !!msg.text && !!msg.text.match(/^\//) || [BORED, SET_GROUP, HELP, FACT].some(t=> t=== msg.text);
 }
 
-export function isFromBot({reply_to_message}: IMessage) {
+export function replyToBot({reply_to_message}: IMessage) {
     return !!reply_to_message && reply_to_message.from.id === BOT_ID
 }
 
@@ -119,4 +118,9 @@ export function getUSerToReply(msg: IMessage): {message: number, user: number} {
         user: initialUser,
         message: replyTo.message_id
     }
+}
+
+
+export function replyPassive(msg){
+    sendMessageToBot(msg.from.id, 'Команды заработают завтра после старта маршрута)')
 }

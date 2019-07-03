@@ -19,7 +19,7 @@ _(Меню можно открыть, нажав на иконку у поля �
 
 const $help = $commands.pipe(
     filter((msg) => isFromUser(msg)),
-    filter(t => filterByWord(t, HELP))
+    filter(t => filterByWord(t, HELP) || filterByWord(t, '/help'))
 );
 
 $help.subscribe((from) => {
@@ -27,7 +27,6 @@ $help.subscribe((from) => {
 });
 
 export function sendAbout(userId, prefix = '') {
-
     if (!!prefix) {
         sendMessageToBot(userId, prefix + helpText, INLINE_CB)
         return

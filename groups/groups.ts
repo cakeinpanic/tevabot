@@ -99,9 +99,8 @@ function sendToAllUsersInTheGroup(msg, group) {
     });
 }
 
-function sendToAllUsers(msg) {
+export function sendToAllUsers(msg) {
     console.log(msg, ' writing to all');
     base.getUsers().forEach(({id}) => sendMessageToBot(id, msg).catch(err => {
-
     }));
 }

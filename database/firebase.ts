@@ -1,5 +1,6 @@
 import {Subject} from 'rxjs/internal/Subject';
 import {IFacts} from '../facts/index';
+import {ISettings} from '../settings';
 import {IMessage} from '../utils';
 import {IUser} from './database';
 
@@ -15,19 +16,22 @@ admin.initializeApp({
 const fdb = admin.firestore();
 
 const factsBD = fdb.collection('facts');
-
 const usersFDB = fdb.collection('users').doc('users');
 const messagesDB = fdb.collection('messages');
+const settingsDB = fdb.collection('settings').doc('settings');
 
 class Database {
     facts$ = new Subject<IFacts>();
 
-    users$ = new Subject< {[key: string]: IUser} >();
+    users$ = new Subject<{[key: string]: IUser}>();
+    $settings = new Subject<ISettings>();
+
     constructor() {
         factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s))
-        usersFDB.onSnapshot(e=>{
+        settingsDB.onSnapshot(s => this.applySettings(s.data()))
+        usersFDB.onSnapshot(e => {
             this.users$.next(e.data());
-        })
+        });
         this.getFacts();
     }
 
@@ -41,21 +45,25 @@ class Database {
     }
 
     addUser(user) {
-        return usersFDB.set({[user.id]:user}, {merge: true});
+        return usersFDB.set({[user.id]: user}, {merge: true});
     }
 
 
-    addMessageToLog(message:IMessage) {
-        messagesDB.doc(message.chat.id + '_' +message.message_id).set(message);
+    addMessageToLog(message: IMessage) {
+        messagesDB.doc(message.chat.id + '_' + message.message_id).set(message);
 
     }
 
+    private applySettings(newSettings) {
+        console.log(newSettings);
+        this.$settings.next(newSettings)
+    }
 
     private getFactsFromSnapshot(snapshot) {
         var res: IFacts = <IFacts>{};
         snapshot.forEach(t => {
             res = {...res, ...t.data()}
-        })
+        });
         this.facts$.next(res);
     }
 

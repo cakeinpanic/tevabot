@@ -27,6 +27,7 @@ const $messageFromUser = $textMessages.pipe(
     filter((msg) => !isInMessagesChat(msg))
 );
 
+
 $messageFromUser.subscribe((msg: IMessage) => base.addUser(msg.from));
 $setGroup.subscribe((msg) => addUSerToGroup(msg.from.id));
 
