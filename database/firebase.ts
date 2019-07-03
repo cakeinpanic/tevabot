@@ -1,4 +1,5 @@
 import {Subject} from 'rxjs/internal/Subject';
+import {IBoring} from '../boring';
 import {sendMessageToBot} from '../bot';
 import {IFacts} from '../facts/index';
 import {BORED, FACT} from '../groups/buttons';
@@ -21,17 +22,19 @@ const factsBD = fdb.collection('facts');
 const usersFDB = fdb.collection('users').doc('users');
 const messagesDB = fdb.collection('messages');
 const settingsDB = fdb.collection('settings').doc('settings');
+const boringDB = fdb.collection('boring').doc('boring');
 
 class Database {
     facts$ = new Subject<IFacts>();
 
     users$ = new Subject<{[key: string]: IUser}>();
     $settings = new Subject<ISettings>();
+    $boring = new Subject<IBoring>();
 
     constructor() {
         factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s))
         settingsDB.onSnapshot(s => this.applySettings(s.data()))
-
+        boringDB.onSnapshot(s => this.$boring.next(s.data()));
 
         usersFDB.onSnapshot(e => {
             this.users$.next(e.data());
@@ -48,8 +51,8 @@ class Database {
 
     }
 
-    getFactsAndBoredCount(){
-        messagesDB.get().then(s => this.getLogs(s)).then((data)=>{
+    getFactsAndBoredCount() {
+        messagesDB.get().then(s => this.getLogs(s)).then((data) => {
             sendMessageToBot(MOTHER_CHAT, JSON.stringify(data));
         });
     }
@@ -69,8 +72,8 @@ class Database {
             messages.push(t.data());
         });
 
-        var boring = messages.filter(({text})=>text === BORED);
-        var fact = messages.filter(({text})=>text === FACT);
+        var boring = messages.filter(({text}) => text === BORED);
+        var fact = messages.filter(({text}) => text === FACT);
 
         return {fact: fact.length, boring: boring.length}
 

@@ -43,6 +43,6 @@ $getLists.subscribe(msg => {
     sendMessageToBot(msg.chat.id, base.formGroupsList(), {parse_mode: 'Markdown'})
 })
 
-$getStat.subscribe(msg => {
+$getStat.subscribe(() => {
     firebase.getFactsAndBoredCount();
 })
