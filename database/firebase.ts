@@ -1,7 +1,9 @@
 import {Subject} from 'rxjs/internal/Subject';
+import {sendMessageToBot} from '../bot';
 import {IFacts} from '../facts/index';
+import {BORED, FACT} from '../groups/buttons';
 import {ISettings} from '../settings';
-import {IMessage} from '../utils';
+import {IMessage, MOTHER_CHAT} from '../utils';
 import {IUser} from './database';
 
 const admin = require('firebase-admin');
@@ -29,6 +31,8 @@ class Database {
     constructor() {
         factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s))
         settingsDB.onSnapshot(s => this.applySettings(s.data()))
+
+
         usersFDB.onSnapshot(e => {
             this.users$.next(e.data());
         });
@@ -44,6 +48,12 @@ class Database {
 
     }
 
+    getFactsAndBoredCount(){
+        messagesDB.get().then(s => this.getLogs(s)).then((data)=>{
+            sendMessageToBot(MOTHER_CHAT, JSON.stringify(data));
+        });
+    }
+
     addUser(user) {
         return usersFDB.set({[user.id]: user}, {merge: true});
     }
@@ -51,6 +61,18 @@ class Database {
 
     addMessageToLog(message: IMessage) {
         messagesDB.doc(message.chat.id + '_' + message.message_id).set(message);
+    }
+
+    private getLogs(logsSnapshot) {
+        var messages: IMessage[] = []
+        logsSnapshot.forEach(t => {
+            messages.push(t.data());
+        });
+
+        var boring = messages.filter(({text})=>text === BORED);
+        var fact = messages.filter(({text})=>text === FACT);
+
+        return {fact: fact.length, boring: boring.length}
 
     }
 
