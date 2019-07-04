@@ -49,7 +49,6 @@ export const $adminReplyedToForwarded = $messages.pipe(
 );
 
 $adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
-    // console.log(msg, replyTo);
     var originalReply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 
     if (!!originalReply) {
