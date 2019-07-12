@@ -13,21 +13,24 @@ import {
     isInMediaChat,
     isMedia,
     MEDIA_CHAT,
-    MESSAGES_CHAT, isInAdminChat, isInMessagesChat, MESSAGES_TO_IGNORE
+    MESSAGES_CHAT,
+    isInAdminChat,
+    isInMessagesChat,
+    MESSAGES_TO_IGNORE
 } from '../utils/utils';
 import {IMessage} from '../entities';
 
 const FORWARDED_MESSAGES = [];
 
 export const $media: Observable<IMessage> = $messages.pipe(
-    filter((t) => isFromUser(t)),
+    filter(t => isFromUser(t)),
     filter(isMedia)
 );
 
 export const $messagesToForwardToAdmins = $messages.pipe(
-    filter((t) => isFromUser(t)),
-    filter((t) => !isMedia(t)),
-    filter((t) => !isCommand(t)),
+    filter(t => isFromUser(t)),
+    filter(t => !isMedia(t)),
+    filter(t => !isCommand(t)),
     delay(500),
     filter(({message_id}: IMessage) => {
         var w = _.includes(MESSAGES_TO_IGNORE, message_id);
@@ -36,22 +39,20 @@ export const $messagesToForwardToAdmins = $messages.pipe(
     })
 );
 
-export const $messagesToLog = $messages.pipe(
-    filter((t) => isFromUser(t))
-);
+export const $messagesToLog = $messages.pipe(filter(t => isFromUser(t)));
 
 export const $adminReplyedToForwarded = $messages.pipe(
-    filter((t) => isInAdminChat(t) || isInMessagesChat(t) || isInMediaChat(t)),
+    filter(t => isInAdminChat(t) || isInMessagesChat(t) || isInMediaChat(t)),
     filter(t => replyToBot(t)),
-    map((msg) => ({
+    map(msg => ({
         msg,
         replyTo: getUSerToReply(msg)
     })),
     filter(({replyTo}) => !!replyTo)
 );
 
-$adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {user: number, message: number}}) => {
-    var originalReply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
+$adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage; replyTo: {user: number; message: number}}) => {
+    var originalReply = _.find(FORWARDED_MESSAGES, {newOne: replyTo.message});
 
     if (!!originalReply) {
         sendMessageByBot(replyTo.user, msg.text, {reply_to_message_id: originalReply.initial});
@@ -60,9 +61,7 @@ $adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {us
     }
 
     sendMessageByBot(replyTo.user, msg.text);
-
 });
-
 
 $messagesToForwardToAdmins.subscribe(initial => {
     forwardMessage(initial, MESSAGES_CHAT);
@@ -75,7 +74,6 @@ $media.subscribe(initial => {
 $messagesToLog.subscribe(initial => {
     firebase.addMessageToLog(initial);
 });
-
 
 function forwardMessage(initial, chat) {
     forward(initial, chat).then(newOne => {

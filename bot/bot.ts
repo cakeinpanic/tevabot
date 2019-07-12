@@ -10,17 +10,12 @@ export const bot = new TelegramBot(token, {polling: true});
 
 export const $messages = new Subject<IMessage>();
 
-export const $textMessages: Observable<IMessage> = $messages.pipe(
-    filter(({text}) => !!text)
-);
+export const $textMessages: Observable<IMessage> = $messages.pipe(filter(({text}) => !!text));
 
-export const $commands: Observable<IMessage> = $textMessages.pipe(
-    filter((t) => isCommand(t))
-);
+export const $commands: Observable<IMessage> = $textMessages.pipe(filter(t => isCommand(t)));
 
 export function startListeningToMessages() {
     bot.on('message', msg => {
         $messages.next(msg);
     });
 }
-

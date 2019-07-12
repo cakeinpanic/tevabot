@@ -16,17 +16,15 @@ export interface IMessage {
     photo: any;
     video_note: any;
     reply_to_message: IMessage;
-    message_id: number,
-    from: IUser,
+    message_id: number;
+    from: IUser;
     chat: {
-        id: number,
-        title: string,
-        type: string
-    },
-    forward_from?:
-        {
-            id: number,
-            is_bot: boolean
-        }
-
+        id: number;
+        title: string;
+        type: string;
+    };
+    forward_from?: {
+        id: number;
+        is_bot: boolean;
+    };
 }

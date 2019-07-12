@@ -33,13 +33,12 @@ export function isInMediaChat(msg) {
     return chatId === MEDIA_CHAT;
 }
 
-
 export function getMessageContent(msg) {
     if (!msg) {
         return 'тут чот ошибочка вышла, напиши кате, как так получилось';
     }
     if (msg.text) {
-        return msg.text
+        return msg.text;
     }
     if (msg.sticker) {
         return {sticker: msg.sticker.file_id};
@@ -57,35 +56,34 @@ export function getMessageContent(msg) {
 export function mapByMatch(...rgs) {
     return (msg: IMessage) => ({
         msg,
-        match: _.find(rgs.map(rg => msg.text.match(rg)), (match => !!match))
-    })
+        match: _.find(rgs.map(rg => msg.text.match(rg)), match => !!match)
+    });
 }
 
 export function filterByWord(msg, word) {
     return msg.text && msg.text === word;
 }
 
-
 export function forward(msg, chat) {
-    return bot.forwardMessage(chat, msg.chat.id, msg.message_id)
+    return bot.forwardMessage(chat, msg.chat.id, msg.message_id);
 }
 
 export function isMedia({voice, video, photo, video_note, document}: IMessage) {
-    return !!document || !!video || !!voice || !!video_note || !!photo
+    return !!document || !!video || !!voice || !!video_note || !!photo;
 }
 
 export function isCommand(msg: IMessage): boolean {
-    return !!msg.text && !!msg.text.match(/^\//) || [BORED, SET_GROUP, HELP, FACT].some(t => t === msg.text);
+    return (!!msg.text && !!msg.text.match(/^\//)) || [BORED, SET_GROUP, HELP, FACT].some(t => t === msg.text);
 }
 
 export function replyToBot({reply_to_message}: IMessage) {
-    return !!reply_to_message && reply_to_message.from.id === BOT_ID
+    return !!reply_to_message && reply_to_message.from.id === BOT_ID;
 }
 
-export function getUSerToReply(msg: IMessage): {message: number, user: number} {
+export function getUSerToReply(msg: IMessage): {message: number; user: number} {
     var replyTo = msg.reply_to_message;
     if (!replyTo || !replyTo.forward_from) {
-        return null
+        return null;
     }
 
     var initialUser = replyTo.forward_from.id;
@@ -93,9 +91,9 @@ export function getUSerToReply(msg: IMessage): {message: number, user: number} {
     return {
         user: initialUser,
         message: replyTo.message_id
-    }
+    };
 }
 
 export function replyPassive(msg) {
-    sendMessageByBot(msg.from.id, 'Команды заработают завтра после старта маршрута)')
+    sendMessageByBot(msg.from.id, 'Команды заработают завтра после старта маршрута)');
 }

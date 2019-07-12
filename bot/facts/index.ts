@@ -9,13 +9,12 @@ import {FACT} from '../groups/buttons';
 import {GROUP} from '../groups/entities';
 import {CURRENT_SETTINGS} from '../settings/index';
 
-
 export interface IFacts {
-    [GROUP.druzim]: string[],
-    [GROUP.kibuz]: string[],
-    [GROUP.city]: string[],
-    [GROUP.ahmedit]: string[],
-    common: string[]
+    [GROUP.druzim]: string[];
+    [GROUP.kibuz]: string[];
+    [GROUP.city]: string[];
+    [GROUP.ahmedit]: string[];
+    common: string[];
 }
 
 const facts: IFacts = {
@@ -24,14 +23,13 @@ const facts: IFacts = {
     [GROUP.city]: [],
     [GROUP.ahmedit]: [],
     common: []
-}
+};
 
 const $getFact = $messages.pipe(
     filter(({text}) => !!text),
-    filter((msg) => isFromUser(msg)),
+    filter(msg => isFromUser(msg)),
     filter(t => filterByWord(t, FACT))
 );
-
 
 firebase.facts$.subscribe(t => {
     facts[GROUP.druzim] = t[GROUP.druzim].concat(t.common);
@@ -44,19 +42,18 @@ const $active = $getFact.pipe(filter(() => CURRENT_SETTINGS.activated));
 
 const $passive = $getFact.pipe(filter(() => !CURRENT_SETTINGS.activated));
 
-
-$active.subscribe((msg) => {
+$active.subscribe(msg => {
     var userGroup = usersList.getUserGroup(msg.from.id);
     var subfacts = facts[userGroup];
     var txt: string;
     if (!subfacts) {
         txt = `Сначала укажи свой маршрут, пожалуйста`;
     } else {
-        txt = subfacts[_.random(0, subfacts.length - 1)]
+        txt = subfacts[_.random(0, subfacts.length - 1)];
     }
-    sendMessageByBot(msg.chat.id, txt)
+    sendMessageByBot(msg.chat.id, txt);
 });
 
-$passive.subscribe((msg) => {
+$passive.subscribe(msg => {
     replyPassive(msg);
 });

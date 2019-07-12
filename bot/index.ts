@@ -15,5 +15,3 @@ export function startBot() {
     usersList.init(firebase);
     startListeningToMessages();
 }
-
-

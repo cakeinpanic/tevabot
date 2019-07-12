@@ -4,7 +4,6 @@ import {HELP, INLINE_CB} from '../groups/buttons';
 import {sendMessageByBot} from '../utils/sendMessage';
 import {filterByWord, isFromUser} from '../utils/utils';
 
-
 const helpText = `
 Привет, я бот! Я тут, чтобы улучшить TevaPulse! 🐿
 
@@ -16,22 +15,21 @@ const helpText = `
 Также иногда мы сами будем присылать через бота всякие интересные штуки, задания и напоминания. Чтобы они приходили правильно, важно указать здесь свой маршрут при помощи меню внизу. Если ты не знаешь свой маршрут – просто пожалуйся на это боту, и мы поможем! 🍕
 
 _(Меню можно открыть, нажав на иконку у поля ввода, рядом с микрофоном и скрепкой)_ 
-`
+`;
 
 const $help = $commands.pipe(
-    filter((msg) => isFromUser(msg)),
+    filter(msg => isFromUser(msg)),
     filter(t => filterByWord(t, HELP) || filterByWord(t, '/help'))
 );
 
-$help.subscribe((from) => {
-    sendAbout(from.from.id)
+$help.subscribe(from => {
+    sendAbout(from.from.id);
 });
 
 export function sendAbout(userId, prefix = '') {
     if (!!prefix) {
-        sendMessageByBot(userId, prefix + helpText, INLINE_CB)
-        return
+        sendMessageByBot(userId, prefix + helpText, INLINE_CB);
+        return;
     }
-    sendMessageByBot(userId, helpText)
+    sendMessageByBot(userId, helpText);
 }
-

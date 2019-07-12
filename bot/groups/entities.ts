@@ -6,7 +6,7 @@ export enum GROUP {
     ahmedit = 'ahmedit',
     city = 'city',
     kibuz = 'kibuz',
-    druzim = 'druzim',
+    druzim = 'druzim'
 }
 
 export const DESCRIPRIONS = {
@@ -14,4 +14,4 @@ export const DESCRIPRIONS = {
     [GROUP.city]: 'Городская община ⚫',
     [GROUP.kibuz]: 'Кибуц 🔴',
     [GROUP.druzim]: 'Друзы 🔵 '
-}
+};

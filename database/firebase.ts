@@ -31,11 +31,11 @@ class Database {
     $boring = new Subject<IBoring>();
 
     constructor() {
-        this.connect()
+        this.connect();
     }
 
     private connect() {
-        factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s));
+        factsBD.onSnapshot(s => this.getFactsFromSnapshot(s));
         settingsDB.onSnapshot(s => this.applySettings(s.data()));
         boringDB.onSnapshot(s => this.$boring.next(s.data()));
 
@@ -47,16 +47,18 @@ class Database {
     }
 
     getFacts() {
-        return factsBD.get().then((s) => {
-            this.getFactsFromSnapshot(s)
-        }).catch((err) => {
-            console.log('Error getting documents', err);
-        });
-
+        return factsBD
+            .get()
+            .then(s => {
+                this.getFactsFromSnapshot(s);
+            })
+            .catch(err => {
+                console.log('Error getting documents', err);
+            });
     }
 
     getFactsAndBoredCount(): Promise<any> {
-        return messagesDB.get().then(s => this.getLogs(s))
+        return messagesDB.get().then(s => this.getLogs(s));
     }
 
     addUser(user) {
@@ -68,7 +70,7 @@ class Database {
     }
 
     private getLogs(logsSnapshot) {
-        var messages: IMessage[] = []
+        var messages: IMessage[] = [];
         logsSnapshot.forEach(t => {
             messages.push(t.data());
         });
@@ -76,18 +78,17 @@ class Database {
         var boring = messages.filter(({text}) => text === BORED);
         var fact = messages.filter(({text}) => text === FACT);
 
-        return {fact: fact.length, boring: boring.length}
-
+        return {fact: fact.length, boring: boring.length};
     }
 
     private applySettings(newSettings) {
-        this.$settings.next(newSettings)
+        this.$settings.next(newSettings);
     }
 
     private getFactsFromSnapshot(snapshot) {
         var res: IFacts = <IFacts>{};
         snapshot.forEach(t => {
-            res = {...res, ...t.data()}
+            res = {...res, ...t.data()};
         });
         this.facts$.next(res);
     }

@@ -6,42 +6,42 @@ class UsersList {
     private users: {[key: string]: IUser} = {};
     private firebase: any;
 
-    constructor() {
-
-    }
+    constructor() {}
 
     init(firebase) {
         this.firebase = firebase;
-        this.firebase.users$.subscribe((u) => {
+        this.firebase.users$.subscribe(u => {
             this.users = u;
         });
     }
 
     getUsers(groupID = null) {
         if (groupID === NOBODY) {
-            return this.getUsersWithoutGroup()
+            return this.getUsersWithoutGroup();
         }
 
         if (groupID === NOT_GREETED) {
-            return this.getNotGreeted()
+            return this.getNotGreeted();
         }
 
         var allUsers = Object.values(this.users);
         if (!groupID || !DESCRIPRIONS[groupID]) {
-            return allUsers
+            return allUsers;
         }
-        return allUsers.filter(({group}) => group === groupID)
+        return allUsers.filter(({group}) => group === groupID);
     }
 
     getUsersWithoutGroup() {
-        return Object.values(this.users).filter(({group}) => !group)
+        return Object.values(this.users).filter(({group}) => !group);
     }
 
-    get getGroupsButtons(): {text: string, callback_data: string}[][] {
-        return Object.keys(GROUP).map(key => ([{
-            text: DESCRIPRIONS[key],
-            callback_data: key
-        }]))
+    get getGroupsButtons(): {text: string; callback_data: string}[][] {
+        return Object.keys(GROUP).map(key => [
+            {
+                text: DESCRIPRIONS[key],
+                callback_data: key
+            }
+        ]);
     }
 
     addUser(user: IUser) {
@@ -53,7 +53,7 @@ class UsersList {
 
         this.users[user.id] = user;
         this.firebase.addUser(user);
-    };
+    }
 
     getUserGroup(userId: number): string {
         return this.users[userId].group;
@@ -62,7 +62,7 @@ class UsersList {
     setName(userId, name: string) {
         var ourUser = this.users[userId];
         if (!ourUser) {
-            return
+            return;
         }
         ourUser.real_name = name;
         this.firebase.addUser(ourUser);
@@ -80,13 +80,18 @@ class UsersList {
 
         ourUser.group = groupNumber;
         this.firebase.addUser(ourUser);
-    };
+    }
 
     formGroupsList(): string {
         var groups = _.groupBy(this.users, 'group');
-        var listString = Object.keys(groups).map((key) => {
-            return `${(DESCRIPRIONS[key] || 'Без группы')} \n` + groups[key].map((u: IUser) => `${this.getUserMention(u)}  ${u.real_name}`).join('\n');
-        }).join('\n\n');
+        var listString = Object.keys(groups)
+            .map(key => {
+                return (
+                    `${DESCRIPRIONS[key] || 'Без группы'} \n` +
+                    groups[key].map((u: IUser) => `${this.getUserMention(u)}  ${u.real_name}`).join('\n')
+                );
+            })
+            .join('\n\n');
 
         return listString;
     }
@@ -102,9 +107,9 @@ class UsersList {
 
     private getUserMention(user: IUser): string {
         if (user.username) {
-            return `[@${user.username}](tg://user?id=${user.id})`
+            return `[@${user.username}](tg://user?id=${user.id})`;
         }
-        return `[${[user.first_name, user.last_name].filter(t => !!t).join(' ')}](tg://user?id=${user.id})`
+        return `[${[user.first_name, user.last_name].filter(t => !!t).join(' ')}](tg://user?id=${user.id})`;
     }
 }
 
