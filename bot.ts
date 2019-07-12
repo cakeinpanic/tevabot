@@ -31,20 +31,26 @@ bot.on('message', msg => {
 });
 
 export function sendMessageToBot(...args) {
-    var sender;
-    if(typeof args[1] === 'string'){
-        sender = bot.sendMessage(...args)
+    var sender = Promise.resolve();
+    console.log(args);
+    if (!args[1]) {
+        return sender;
     }
-    if(!!args[1].photo) {
-        sender = bot.sendPhoto(args[0],args[1].photo)
+    if (typeof args[1] === 'string') {
+        sender = bot.sendMessage(...args);
     }
-    if(!!args[1].sticker) {
-        sender = bot.sendSticker(args[0],args[1].sticker)
+    try {
+        if (!!args[1].photo) {
+            sender = bot.sendPhoto(args[0], args[1].photo);
+        } else if (!!args[1].sticker) {
+            sender = bot.sendSticker(args[0], args[1].sticker);
+        } else if (!!args[1].location) {
+            sender = bot.sendLocation(args[0], args[1].location.latitude, args[1].location.longitude);
+        }
+    } catch (e) {
+        sender = Promise.resolve();
     }
-    if(!!args[1].location) {
-        sender = bot.sendLocation(args[0],args[1].location.latitude, args[1].location.longitude)
-    }
-    return sender.then(t => {
+    return sender.then((t: any) => {
         last = t;
         //DO NOT REMOVE RETURN!!
         return t;
