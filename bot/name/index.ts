@@ -1,9 +1,10 @@
 import {filter, first, map} from 'rxjs/operators';
-import {$commands, $messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
-import {base} from '../database/database';
-import {INLINE_CB} from '../groups/buttons';
-import {sendAbout} from '../help';
-import {IMessage, isFromUser, mapByMatch} from '../utils';
+import {usersList} from '../../database/usersList';
+import {$commands, $messages} from '../bot';
+import {IMessage} from '../entities';
+import {sendAbout} from '../help/index';
+import {sendMessageByBot} from '../utils/sendMessage';
+import {isFromUser, mapByMatch, MESSAGES_TO_IGNORE} from '../utils/utils';
 
 const $start = $commands.pipe(
     filter((msg) => isFromUser(msg)),
@@ -16,16 +17,15 @@ const $setName = $start.pipe(
 
 $setName.subscribe(({msg}) => {
     var from = msg.from.id;
-    sendMessageToBot(from, 'Привет! Укажи, пожалуйста, свое имя и фамилию (чтобы мы могли сверить списки). И мы сразу же начнем!');
+    sendMessageByBot(from, 'Привет! Укажи, пожалуйста, свое имя и фамилию (чтобы мы могли сверить списки). И мы сразу же начнем!');
     $messages
         .pipe(
             filter((m: IMessage) => from === m.from.id),
             first()
         )
         .subscribe(t => {
-            console.log(t);
             MESSAGES_TO_IGNORE.push(t.message_id);
-            base.setName(from, t.text);
+            usersList.setName(from, t.text);
 
             sendAbout(t.from.id, 'Ура, добро пожаловать на борт! Сейчас я расскажу про себя 😊\n');
         })

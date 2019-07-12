@@ -1,5 +1,6 @@
 const http = require('http');
 
+// only for heroku, because I dont want to pay from non-sleeping dyno
 const PING_URL = 'http://tevapulse.herokuapp.com';
 
 export function startPing() {
@@ -15,4 +16,3 @@ export function startPing() {
         console.log('ping ', hours);
     }, 300000);
 }
-startPing();

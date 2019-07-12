@@ -1,11 +1,9 @@
 import {Subject} from 'rxjs/internal/Subject';
-import {IBoring} from '../boring';
-import {sendMessageToBot} from '../bot';
-import {IFacts} from '../facts/index';
-import {BORED, FACT} from '../groups/buttons';
-import {ISettings} from '../settings';
-import {IMessage, MOTHER_CHAT} from '../utils';
-import {IUser} from './database';
+import {IBoring} from '../bot/boring';
+import {IMessage, IUser} from '../bot/entities';
+import {IFacts} from '../bot/facts';
+import {BORED, FACT} from '../bot/groups/buttons';
+import {ISettings} from '../bot/settings';
 
 const admin = require('firebase-admin');
 
@@ -24,21 +22,27 @@ const messagesDB = fdb.collection('messages');
 const settingsDB = fdb.collection('settings').doc('settings');
 const boringDB = fdb.collection('boring').doc('boring');
 
+console.log('fb');
+
 class Database {
     facts$ = new Subject<IFacts>();
-
     users$ = new Subject<{[key: string]: IUser}>();
     $settings = new Subject<ISettings>();
     $boring = new Subject<IBoring>();
 
     constructor() {
-        factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s))
-        settingsDB.onSnapshot(s => this.applySettings(s.data()))
+        this.connect()
+    }
+
+    private connect() {
+        factsBD.onSnapshot((s) => this.getFactsFromSnapshot(s));
+        settingsDB.onSnapshot(s => this.applySettings(s.data()));
         boringDB.onSnapshot(s => this.$boring.next(s.data()));
 
         usersFDB.onSnapshot(e => {
             this.users$.next(e.data());
         });
+
         this.getFacts();
     }
 
@@ -51,16 +55,13 @@ class Database {
 
     }
 
-    getFactsAndBoredCount() {
-        messagesDB.get().then(s => this.getLogs(s)).then((data) => {
-            sendMessageToBot(MOTHER_CHAT, JSON.stringify(data));
-        });
+    getFactsAndBoredCount(): Promise<any> {
+        return messagesDB.get().then(s => this.getLogs(s))
     }
 
     addUser(user) {
         return usersFDB.set({[user.id]: user}, {merge: true});
     }
-
 
     addMessageToLog(message: IMessage) {
         messagesDB.doc(message.chat.id + '_' + message.message_id).set(message);
@@ -80,7 +81,6 @@ class Database {
     }
 
     private applySettings(newSettings) {
-        console.log(newSettings);
         this.$settings.next(newSettings)
     }
 
@@ -91,7 +91,6 @@ class Database {
         });
         this.facts$.next(res);
     }
-
 }
 
 export const firebase = new Database();

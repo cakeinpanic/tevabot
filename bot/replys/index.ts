@@ -1,20 +1,21 @@
 import * as _ from 'lodash';
 import {Observable} from 'rxjs/index';
 import {delay, filter, map} from 'rxjs/operators';
-import {$messages, MESSAGES_TO_IGNORE, sendMessageToBot} from '../bot';
-import {firebase} from '../database/firebase';
+import {$messages} from '../bot';
+import {firebase} from '../../database/firebase';
+import {sendMessageByBot} from '../utils/sendMessage';
 import {
     forward,
     getUSerToReply,
-    IMessage,
     isCommand,
     replyToBot,
     isFromUser,
     isInMediaChat,
     isMedia,
     MEDIA_CHAT,
-    MESSAGES_CHAT, isInAdminChat, isInMessagesChat
-} from '../utils';
+    MESSAGES_CHAT, isInAdminChat, isInMessagesChat, MESSAGES_TO_IGNORE
+} from '../utils/utils';
+import {IMessage} from '../entities';
 
 const FORWARDED_MESSAGES = [];
 
@@ -38,6 +39,7 @@ export const $messagesToForwardToAdmins = $messages.pipe(
 export const $messagesToLog = $messages.pipe(
     filter((t) => isFromUser(t))
 );
+
 export const $adminReplyedToForwarded = $messages.pipe(
     filter((t) => isInAdminChat(t) || isInMessagesChat(t) || isInMediaChat(t)),
     filter(t => replyToBot(t)),
@@ -52,12 +54,12 @@ $adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage, replyTo: {us
     var originalReply = _.find(FORWARDED_MESSAGES, ({newOne: replyTo.message}));
 
     if (!!originalReply) {
-        sendMessageToBot(replyTo.user, msg.text, {reply_to_message_id: originalReply.initial});
+        sendMessageByBot(replyTo.user, msg.text, {reply_to_message_id: originalReply.initial});
         _.pull(FORWARDED_MESSAGES, originalReply);
         return;
     }
 
-    sendMessageToBot(replyTo.user, msg.text);
+    sendMessageByBot(replyTo.user, msg.text);
 
 });
 
@@ -73,6 +75,7 @@ $media.subscribe(initial => {
 $messagesToLog.subscribe(initial => {
     firebase.addMessageToLog(initial);
 });
+
 
 function forwardMessage(initial, chat) {
     forward(initial, chat).then(newOne => {

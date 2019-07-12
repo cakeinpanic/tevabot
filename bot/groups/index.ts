@@ -1,8 +1,18 @@
 import {filter, map} from 'rxjs/operators';
-import {$commands, $textMessages, sendMessageToBot} from '../bot';
-import {base} from '../database/database';
-import {firebase} from '../database/firebase';
-import {filterByWord, IMessage, isFromUser, isInAdminChat, isInMediaChat, isInMessagesChat, mapByMatch} from '../utils';
+import {firebase} from '../../database/firebase';
+import {usersList} from '../../database/usersList';
+import {$commands, $textMessages} from '../bot';
+import {IMessage} from '../entities';
+import {sendMessageByBot} from '../utils/sendMessage';
+import {
+    filterByWord,
+    isFromUser,
+    isInAdminChat,
+    isInMediaChat,
+    isInMessagesChat,
+    mapByMatch,
+    MOTHER_CHAT
+} from '../utils/utils';
 import {SET_GROUP} from './buttons';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
 
@@ -34,15 +44,17 @@ const $messageFromUser = $textMessages.pipe(
 );
 
 
-$messageFromUser.subscribe((msg: IMessage) => base.addUser(msg.from));
+$messageFromUser.subscribe((msg: IMessage) => usersList.addUser(msg.from));
 $setGroup.subscribe((msg) => addUSerToGroup(msg.from.id));
 
 
 $sendToGroup.subscribe(({msg}) => sendMessageToGroup(msg));
 $getLists.subscribe(msg => {
-    sendMessageToBot(msg.chat.id, base.formGroupsList(), {parse_mode: 'Markdown'})
+    sendMessageByBot(msg.chat.id, usersList.formGroupsList(), {parse_mode: 'Markdown'})
 })
 
 $getStat.subscribe(() => {
-    firebase.getFactsAndBoredCount();
+    firebase.getFactsAndBoredCount().then(data => {
+        sendMessageByBot(MOTHER_CHAT, JSON.stringify(data));
+    });
 })

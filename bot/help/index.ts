@@ -1,7 +1,8 @@
 import {filter} from 'rxjs/operators';
-import {$commands, sendMessageToBot} from '../bot';
+import {$commands} from '../bot';
 import {HELP, INLINE_CB} from '../groups/buttons';
-import {filterByWord, isFromUser} from '../utils';
+import {sendMessageByBot} from '../utils/sendMessage';
+import {filterByWord, isFromUser} from '../utils/utils';
 
 
 const helpText = `
@@ -28,9 +29,9 @@ $help.subscribe((from) => {
 
 export function sendAbout(userId, prefix = '') {
     if (!!prefix) {
-        sendMessageToBot(userId, prefix + helpText, INLINE_CB)
+        sendMessageByBot(userId, prefix + helpText, INLINE_CB)
         return
     }
-    sendMessageToBot(userId, helpText)
+    sendMessageByBot(userId, helpText)
 }
 

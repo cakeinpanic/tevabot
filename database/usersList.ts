@@ -1,39 +1,18 @@
 import * as _ from 'lodash';
-import {firebase} from './firebase';
+import {IUser} from '../bot/entities';
+import {DESCRIPRIONS, GROUP, NOBODY, NOT_GREETED} from '../bot/groups/entities';
 
-export const ALL = 'all';
-export const NOBODY = 'nobody';
-export const NOT_GREETED = 'nogreeted';
-
-export interface IUser {
-    id: number;
-    username: string;
-    first_name: string;
-    last_name: string;
-    group?: string;
-    real_name?: string;
-    greeted: boolean;
-}
-
-export enum GROUP {
-    ahmedit = 'ahmedit',
-    city = 'city',
-    kibuz = 'kibuz',
-    druzim = 'druzim',
-}
-
-export const DESCRIPRIONS = {
-    [GROUP.ahmedit]: 'Ахмедиты ⚪',
-    [GROUP.city]: 'Городская община ⚫',
-    [GROUP.kibuz]: 'Кибуц 🔴',
-    [GROUP.druzim]: 'Друзы 🔵 '
-}
-
-class Database {
+class UsersList {
     private users: {[key: string]: IUser} = {};
+    private firebase: any;
 
     constructor() {
-        firebase.users$.subscribe((u) => {
+
+    }
+
+    init(firebase) {
+        this.firebase = firebase;
+        this.firebase.users$.subscribe((u) => {
             this.users = u;
         });
     }
@@ -46,6 +25,7 @@ class Database {
         if (groupID === NOT_GREETED) {
             return this.getNotGreeted()
         }
+
         var allUsers = Object.values(this.users);
         if (!groupID || !DESCRIPRIONS[groupID]) {
             return allUsers
@@ -64,7 +44,6 @@ class Database {
         }]))
     }
 
-
     addUser(user: IUser) {
         const alreadyHas = !!this.users[user.id];
 
@@ -73,7 +52,7 @@ class Database {
         }
 
         this.users[user.id] = user;
-        firebase.addUser(user);
+        this.firebase.addUser(user);
     };
 
     getUserGroup(userId: number): string {
@@ -86,7 +65,7 @@ class Database {
             return
         }
         ourUser.real_name = name;
-        firebase.addUser(ourUser);
+        this.firebase.addUser(ourUser);
     }
 
     addUserGroup(userId, groupNumber = null) {
@@ -100,23 +79,23 @@ class Database {
         }
 
         ourUser.group = groupNumber;
-        firebase.addUser(ourUser);
+        this.firebase.addUser(ourUser);
     };
 
     formGroupsList(): string {
         var groups = _.groupBy(this.users, 'group');
-        var k = Object.keys(groups).map((key) => {
+        var listString = Object.keys(groups).map((key) => {
             return `${(DESCRIPRIONS[key] || 'Без группы')} \n` + groups[key].map((u: IUser) => `${this.getUserMention(u)}  ${u.real_name}`).join('\n');
-        }).join('\n\n')
+        }).join('\n\n');
 
-        return k
+        return listString;
     }
 
     getNotGreeted() {
         var users = Object.values(this.users).filter(({greeted}) => !greeted);
         users.forEach(u => {
             u.greeted = true;
-            firebase.addUser(u);
+            this.firebase.addUser(u);
         });
         return users;
     }
@@ -129,4 +108,4 @@ class Database {
     }
 }
 
-export const base = new Database();
+export const usersList = new UsersList();

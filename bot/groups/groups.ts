@@ -1,22 +1,25 @@
-import {actions, sendMessageToBot} from '../bot';
-import {ALL, base, DESCRIPRIONS, NOBODY, NOT_GREETED} from '../database/database';
-import {getMessageContent} from '../utils';
+import {IMessage} from '../entities';
+import {actions} from '../utils/utils';
+import {usersList} from '../../database/usersList';
+import {sendMessageByBot} from '../utils/sendMessage';
+import {getMessageContent} from '../utils/utils';
 import {CHOOSE_GROUP, CHOOSE_GROUP_WITH_ALL, YES_NO} from './buttons';
+import {ALL, DESCRIPRIONS, NOBODY, NOT_GREETED} from './entities';
 
 
 export function addUSerToGroup(userId) {
-    var currentGroup = base.getUserGroup(userId);
+    var currentGroup = usersList.getUserGroup(userId);
     var prefix = !!currentGroup ? `Сейчас ты в группе ${DESCRIPRIONS[currentGroup]}\n` : '';
 
-    sendMessageToBot(userId, prefix + `Выбери группу`, CHOOSE_GROUP).then(t => {
+    sendMessageByBot(userId, prefix + `Выбери группу`, CHOOSE_GROUP).then(t => {
         actions.push({
             id: t.message_id,
             cb: (groupNumber) => {
                 if (groupNumber === 'false') {
                     return
                 }
-                base.addUserGroup(userId, groupNumber);
-                sendMessageToBot(userId, `Ты добавлен в группу ${DESCRIPRIONS[groupNumber]}. Теперь тебе будет приходить информация только для этой группы`);
+                usersList.addUserGroup(userId, groupNumber);
+                sendMessageByBot(userId, `Ты добавлен в группу ${DESCRIPRIONS[groupNumber]}. Теперь тебе будет приходить информация только для этой группы`);
             },
             remove: true
         });
@@ -34,7 +37,7 @@ export function sendMessageToGroup(msg) {
     const textToSend = getMessageContent(reply);
     const originalMessageId = reply.message_id;
 
-    sendMessageToBot(chatId,
+    sendMessageByBot(chatId,
         `выберите группу для отправки этого сообщения`,
         {...CHOOSE_GROUP_WITH_ALL, ... {reply_to_message_id: originalMessageId}}
     )
@@ -57,18 +60,18 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
     if (groupId === NOT_GREETED) {
         groupName = 'тех, с кем еще не поздоровались'
     }
-    sendMessageToBot(
+    sendMessageByBot(
         chatId,
         `отправляю сообщение в группу ${groupName}`,
         {...YES_NO, ...{reply_to_message_id: originalMessageId}}
-    ).then((theMessage => {
+    ).then((theMessage: IMessage) => {
         actions.push({
             id: theMessage.message_id,
             cb: (reply) => {
                 var sendIt = reply === 'true';
                 if (sendIt) {
                     sendOrNot(textToSend, groupId);
-                    sendMessageToBot(
+                    sendMessageByBot(
                         chatId,
                         `Отправлено в группу ${groupName}`,
                         {reply_to_message_id: originalMessageId}
@@ -78,7 +81,7 @@ function confirmGroupChoose(chatId, textToSend, groupId, originalMessageId) {
             },
             remove: true
         })
-    }))
+    });
 
 }
 
@@ -97,13 +100,13 @@ function sendOrNot(textToSend: string, groupId: string) {
 function sendToAllUsersInTheGroup(msg, group) {
     console.log(msg, ' writing to group ' + group);
 
-    base.getUsers(group).forEach(user => {
-        sendMessageToBot(user.id, msg)
+    usersList.getUsers(group).forEach(user => {
+        sendMessageByBot(user.id, msg)
     });
 }
 
 export function sendToAllUsers(msg) {
     console.log(msg, ' writing to all');
-    base.getUsers().forEach(({id}) => sendMessageToBot(id, msg).catch(err => {
+    usersList.getUsers().forEach(({id}) => sendMessageByBot(id, msg).catch(err => {
     }));
 }

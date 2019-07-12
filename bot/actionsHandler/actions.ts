@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import {actions, bot} from './bot';
+import {bot} from '../bot';
+import {actions} from '../utils/utils';
 
 export interface IActionReaction {
     id: string,
@@ -36,7 +37,6 @@ export interface IAction {
     remove: boolean;
     cb: (any) => any;
     id: number
-
 }
 
 bot.on('callback_query', (t: IActionReaction) => {

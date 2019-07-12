@@ -1,48 +1,17 @@
 import * as _ from 'lodash';
-import {bot, sendMessageToBot} from './bot';
-import {IUser} from './database/database';
-import {BORED, FACT, HELP, SET_GROUP} from './groups/buttons';
-
-export interface IMessage {
-    text: string;
-    video: any;
-    document: any;
-    voice: any;
-    photo: any;
-    video_note: any;
-    reply_to_message: IMessage;
-    message_id: number,
-    from: IUser,
-    chat: {
-        id: number,
-        title: string,
-        type: string
-    },
-    forward_from?:
-        {
-            id: number,
-            is_bot: boolean
-        }
-
-}
+import {IAction} from '../actionsHandler/actions';
+import {bot} from '../bot';
+import {IMessage} from '../entities';
+import {BORED, FACT, HELP, SET_GROUP} from '../groups/buttons';
+import {sendMessageByBot} from './sendMessage';
 
 export const BOT_ID = 123456;
-export const MOTHER = 123456;
 export const MEDIA_CHAT = -123456;
 export const MOTHER_CHAT = -123456;
 export const MESSAGES_CHAT = -123456;
-export const LIST_CHAT = -1001404184705;
 
-export const setGroupName = 'track';
-
-export function isFromBot(msg): boolean {
-    return msg.from.id === BOT_ID
-}
-
-export function isFromMother(msg) {
-    const chatId = msg.from.id;
-    return chatId === MOTHER;
-}
+export const MESSAGES_TO_IGNORE = [];
+export const actions: IAction[] = [];
 
 export function isFromUser(msg) {
     const chatId = msg.chat.id;
@@ -79,6 +48,7 @@ export function getMessageContent(msg) {
     if (msg.photo) {
         return {photo: msg.photo[0].file_id};
     }
+
     if (msg.location) {
         return {location: msg.location};
     }
@@ -126,7 +96,6 @@ export function getUSerToReply(msg: IMessage): {message: number, user: number} {
     }
 }
 
-
 export function replyPassive(msg) {
-    sendMessageToBot(msg.from.id, 'Команды заработают завтра после старта маршрута)')
+    sendMessageByBot(msg.from.id, 'Команды заработают завтра после старта маршрута)')
 }
