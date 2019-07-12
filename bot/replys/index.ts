@@ -1,24 +1,23 @@
 import * as _ from 'lodash';
 import {Observable} from 'rxjs/index';
 import {delay, filter, map} from 'rxjs/operators';
-import {$messages} from '../bot';
+import {config} from '../../config';
 import {firebase} from '../../database/firebase';
+import {$messages} from '../bot';
+import {IMessage} from '../entities';
 import {sendMessageByBot} from '../utils/sendMessage';
 import {
     forward,
     getUSerToReply,
     isCommand,
-    replyToBot,
     isFromUser,
-    isInMediaChat,
-    isMedia,
-    MEDIA_CHAT,
-    MESSAGES_CHAT,
     isInAdminChat,
+    isInMediaChat,
     isInMessagesChat,
-    MESSAGES_TO_IGNORE
+    isMedia,
+    MESSAGES_TO_IGNORE,
+    replyToBot
 } from '../utils/utils';
-import {IMessage} from '../entities';
 
 const FORWARDED_MESSAGES = [];
 
@@ -64,11 +63,11 @@ $adminReplyedToForwarded.subscribe(({msg, replyTo}: {msg: IMessage; replyTo: {us
 });
 
 $messagesToForwardToAdmins.subscribe(initial => {
-    forwardMessage(initial, MESSAGES_CHAT);
+    forwardMessage(initial, config.MESSAGES_CHAT);
 });
 
 $media.subscribe(initial => {
-    forwardMessage(initial, MEDIA_CHAT);
+    forwardMessage(initial, config.MEDIA_CHAT);
 });
 
 $messagesToLog.subscribe(initial => {

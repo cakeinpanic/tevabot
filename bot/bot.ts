@@ -1,10 +1,11 @@
 import {Observable, Subject} from 'rxjs/index';
 import {filter} from 'rxjs/operators';
+import {config} from '../config';
 import {IMessage} from './entities';
 import {isCommand} from './utils/utils';
 
 const TelegramBot = require('node-telegram-bot-api');
-const token = process.env.BOT_TOKEN || '123456';
+const token = config.BOT_TOKEN;
 
 export const bot = new TelegramBot(token, {polling: true});
 

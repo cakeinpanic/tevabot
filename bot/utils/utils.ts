@@ -1,14 +1,11 @@
 import * as _ from 'lodash';
+import {config} from '../../config';
 import {IAction} from '../actionsHandler/actions';
 import {bot} from '../bot';
 import {IMessage} from '../entities';
 import {BORED, FACT, HELP, SET_GROUP} from '../groups/buttons';
 import {sendMessageByBot} from './sendMessage';
 
-export const BOT_ID = 123456;
-export const MEDIA_CHAT = -123456;
-export const MOTHER_CHAT = -123456;
-export const MESSAGES_CHAT = -123456;
 
 export const MESSAGES_TO_IGNORE = [];
 export const actions: IAction[] = [];
@@ -20,17 +17,17 @@ export function isFromUser(msg) {
 
 export function isInAdminChat(msg) {
     const chatId = msg.chat.id;
-    return chatId === MOTHER_CHAT;
+    return chatId === config.MOTHER_CHAT;
 }
 
 export function isInMessagesChat(msg) {
     const chatId = msg.chat.id;
-    return chatId === MESSAGES_CHAT;
+    return chatId === config.MESSAGES_CHAT;
 }
 
 export function isInMediaChat(msg) {
     const chatId = msg.chat.id;
-    return chatId === MEDIA_CHAT;
+    return chatId === config.MEDIA_CHAT;
 }
 
 export function getMessageContent(msg) {
@@ -77,7 +74,7 @@ export function isCommand(msg: IMessage): boolean {
 }
 
 export function replyToBot({reply_to_message}: IMessage) {
-    return !!reply_to_message && reply_to_message.from.id === BOT_ID;
+    return !!reply_to_message && reply_to_message.from.id === config.BOT_ID
 }
 
 export function getUSerToReply(msg: IMessage): {message: number; user: number} {

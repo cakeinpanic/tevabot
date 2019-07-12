@@ -4,14 +4,13 @@ import {IMessage, IUser} from '../bot/entities';
 import {IFacts} from '../bot/facts';
 import {BORED, FACT} from '../bot/groups/buttons';
 import {ISettings} from '../bot/settings';
+import {config} from '../config';
 
 const admin = require('firebase-admin');
 
-const serviceAccount = require('../serviceAccountKey.json');
-
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: '123456'
+    credential: admin.credential.cert(config.serviceAccount),
+    databaseURL: config.databaseURL
 });
 
 const fdb = admin.firestore();
@@ -21,8 +20,6 @@ const usersFDB = fdb.collection('users').doc('users');
 const messagesDB = fdb.collection('messages');
 const settingsDB = fdb.collection('settings').doc('settings');
 const boringDB = fdb.collection('boring').doc('boring');
-
-console.log('fb');
 
 class Database {
     facts$ = new Subject<IFacts>();
@@ -93,5 +90,6 @@ class Database {
         this.facts$.next(res);
     }
 }
+
 
 export const firebase = new Database();

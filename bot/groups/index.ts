@@ -1,4 +1,5 @@
 import {filter, map} from 'rxjs/operators';
+import {config} from '../../config';
 import {firebase} from '../../database/firebase';
 import {usersList} from '../../database/usersList';
 import {$commands, $textMessages} from '../bot';
@@ -10,8 +11,7 @@ import {
     isInAdminChat,
     isInMediaChat,
     isInMessagesChat,
-    mapByMatch,
-    MOTHER_CHAT
+    mapByMatch
 } from '../utils/utils';
 import {SET_GROUP} from './buttons';
 import {addUSerToGroup, sendMessageToGroup} from './groups';
@@ -53,6 +53,6 @@ $getLists.subscribe(msg => {
 
 $getStat.subscribe(() => {
     firebase.getFactsAndBoredCount().then(data => {
-        sendMessageByBot(MOTHER_CHAT, JSON.stringify(data));
+        sendMessageByBot(config.MOTHER_CHAT, JSON.stringify(data));
     });
 });

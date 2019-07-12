@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write '**/*.ts'",
     "tsc": "tsc",
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "dev": "env-cmd ts-node index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "typescript": "^3.5.1"
   },
   "devDependencies": {
+    "env-cmd": "^9.0.3",
     "husky": "^2.3.0",
     "lint-staged": "^7.3.0",
     "prettier": "^1.17.1"
